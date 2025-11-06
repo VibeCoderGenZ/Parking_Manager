@@ -1,3 +1,5 @@
+package model;
+
 public class ParkingSpot {
     private final String spotId;
     private final VehicleType allowedType;

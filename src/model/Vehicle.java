@@ -1,3 +1,5 @@
+package model;
+
 public class Vehicle {
     private final String ownerName;
     private final String ownerPhone;

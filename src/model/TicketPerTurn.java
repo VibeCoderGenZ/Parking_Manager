@@ -1,3 +1,5 @@
+package model;
+
 public class TicketPerTurn extends Ticket {
 
     public TicketPerTurn(Vehicle vehicle) {

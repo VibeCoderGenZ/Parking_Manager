@@ -2,12 +2,10 @@ package model;
 
 public class ParkingSpot {
     private final String spotId;
-    private final VehicleType allowedType;
     private Vehicle vehicle;
 
-    public ParkingSpot(String spotId, VehicleType allowedType) {
+    public ParkingSpot(String spotId) {
         this.spotId = spotId;
-        this.allowedType = allowedType;
         this.vehicle = null;
     }
 
@@ -15,20 +13,16 @@ public class ParkingSpot {
         return spotId;
     }
 
-    public VehicleType getAllowedType() {
-        return allowedType;
-    }
-
     public Vehicle getVehicle() {
         return vehicle;
     }
 
     public boolean isOccupied() {
-        return vehicle != null;
+        return vehicle == null;
     }
 
     public boolean park(Vehicle vehicle) {
-        if (isOccupied() && vehicle.getType() == this.allowedType) {
+        if (isOccupied()) {
             this.vehicle = vehicle;
             return true;
         }

@@ -14,7 +14,7 @@ public class ParkingZone {
         this.parkingSpots = new ArrayList<>();
         for (int i = 1; i <= numberOfSpots; i++) {
             String spotId = name + "-" + i;
-            this.parkingSpots.add(new ParkingSpot(spotId, allowedType));
+            this.parkingSpots.add(new ParkingSpot(spotId));
         }
     }
 
@@ -37,7 +37,7 @@ public class ParkingZone {
     public int getNumberOfAvailableSpots() {
         int availableSpots = 0;
         for (ParkingSpot spot : parkingSpots) {
-            if (!spot.isOccupied()) {
+            if (spot.isOccupied()) {
                 availableSpots++;
             }
         }
@@ -47,12 +47,24 @@ public class ParkingZone {
     public void addSpot() {
         int nextSpotNumber = getNumberOfSpots() + 1;
         String newSpotId = this.name + "-" + nextSpotNumber;
-        this.parkingSpots.add(new ParkingSpot(newSpotId, this.allowedType));
+        this.parkingSpots.add(new ParkingSpot(newSpotId));
     }
 
     public void removeSpot() {
         if (!this.parkingSpots.isEmpty()) {
             this.parkingSpots.removeLast();
         }
+    }
+
+    public boolean parkCheck(Vehicle vehicle) {
+        if (vehicle.getType() != this.allowedType) {
+            return false;
+        }
+        for (ParkingSpot spot : parkingSpots) {
+            if (spot.isOccupied()) {
+                return spot.park(vehicle);
+            }
+        }
+        return false;
     }
 }

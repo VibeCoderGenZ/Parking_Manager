@@ -12,27 +12,26 @@ public class TicketPerHour extends Ticket {
     private long getHourlyRate() {
         VehicleType type = getVehicle().getType();
         return switch (type) {
-            case BICYCLE -> 500; // Giá mỗi giờ cho xe đạp
-            case BIKE -> 1000; // Giá mỗi giờ cho xe máy
-            case CAR -> 10000; // Giá mỗi giờ cho ô tô
+            case BICYCLE -> 500;
+            case BIKE -> 1000;
+            case CAR -> 10000;
             default -> 0;
         };
     }
 
-    public long getPrice() {
-        LocalDateTime finalTime;
+    @Override
+    public void calculateFinalPrice() {
         if (getExitTime() == null) {
-            finalTime = LocalDateTime.now();
-        } else {
-            finalTime = getExitTime();
+            // Chỉ tính giá khi đã có thời gian ra
+            return;
         }
 
-        Duration duration = Duration.between(getEntryTime(), finalTime);
+        Duration duration = Duration.between(getEntryTime(), getExitTime());
         long totalMinutes = duration.toMinutes();
 
         long hours = (long) Math.ceil(totalMinutes / 60.0);
 
-        return hours * getHourlyRate();
+        long finalPrice = hours * getHourlyRate();
+        setPrice(finalPrice); // Cập nhật giá vào trường price của lớp cha
     }
-
 }

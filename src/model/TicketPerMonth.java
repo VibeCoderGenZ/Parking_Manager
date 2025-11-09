@@ -9,6 +9,7 @@ public class TicketPerMonth extends Ticket {
     public TicketPerMonth(Vehicle vehicle) {
         super(vehicle);
         this.expiryDate = getEntryTime().plusMonths(1);
+        calculateFinalPrice(); // Giá vé tháng là cố định, tính luôn khi tạo
     }
 
     public LocalDateTime getExpiryDate() {
@@ -17,5 +18,17 @@ public class TicketPerMonth extends Ticket {
 
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(expiryDate);
+    }
+
+    @Override
+    public void calculateFinalPrice() {
+        VehicleType type = getVehicle().getType();
+        long finalPrice = switch (type) {
+            case BICYCLE -> 50000;
+            case BIKE -> 100000;
+            case CAR -> 1000000;
+            default -> 0;
+        };
+        setPrice(finalPrice);
     }
 }

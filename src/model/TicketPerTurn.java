@@ -6,13 +6,15 @@ public class TicketPerTurn extends Ticket {
         super(vehicle);
     }
 
-    public long getPrice() {
+    @Override
+    public void calculateFinalPrice() {
         VehicleType type = getVehicle().getType();
-        return switch (type) {
-            case BICYCLE -> 2000; // Giá vé xe đạp
-            case BIKE -> 5000; // Giá vé xe máy
-            case CAR -> 30000; // Giá vé ô tô
+        long finalPrice = switch (type) {
+            case BICYCLE -> 2000;
+            case BIKE -> 5000;
+            case CAR -> 30000;
             default -> 0;
         };
+        setPrice(finalPrice);
     }
 }

@@ -6,6 +6,7 @@ import dao.ParkingSpotDAO; // Thêm import
 import dao.ParkingZoneDAO;
 import model.ParkingSpot;
 import model.ParkingZone;
+import model.Vehicle;
 import model.VehicleType;
 
 import javax.swing.*;
@@ -21,11 +22,12 @@ public class ManagementPanel extends JPanel {
 
     private final ParkingController parkingController;
     private final ParkingZoneDAO zoneDAO;
-    private final ParkingSpotDAO spotDAO; // Thêm spotDAO
+    private final ParkingSpotDAO spotDAO; // Khai báo và khởi tạo spotDAO ở đây
 
     private JTable parkingTable;
     private DefaultTableModel tableModel;
     private JPanel zoneSelectionPanel;
+    private List<ParkingZone> allZones; // Khai báo lại biến allZones
     private ParkingZone currentZone;
 
     public ManagementPanel() {
@@ -48,7 +50,7 @@ public class ManagementPanel extends JPanel {
         zoneScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
 
         // --- Bảng dữ liệu (CENTER) ---
-        String[] columnNames = {"Mã Chỗ Đỗ", "Trạng Thái", "Biển Số Xe"};
+        String[] columnNames = {"Mã Chỗ Đỗ", "Trạng Thái", "Biển Số Xe", "Tên Chủ Xe", "SĐT Chủ Xe"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override public boolean isCellEditable(int row, int column) { return false; }
         };
@@ -80,7 +82,7 @@ public class ManagementPanel extends JPanel {
     private void loadZoneButtons() {
         zoneSelectionPanel.removeAll();
         try {
-            List<ParkingZone> allZones = zoneDAO.getAllParkingZones();
+            allZones = zoneDAO.getAllParkingZones(); // Sử dụng allZones đã được khai báo
             if (allZones.isEmpty()) {
                 zoneSelectionPanel.add(new JLabel("Chưa có khu vực nào."));
                 tableModel.setRowCount(0);
@@ -89,7 +91,7 @@ public class ManagementPanel extends JPanel {
                 allButton.addActionListener(e -> loadSpotsForZone(null));
                 zoneSelectionPanel.add(allButton);
 
-                for (ParkingZone zone : allZones) {
+                for (ParkingZone zone : allZones) { // Sử dụng allZones đã được khai báo
                     JButton zoneButton = new JButton(zone.getName() + " (" + zone.getAllowedVehicleType() + ")");
                     zoneButton.addActionListener(e -> loadSpotsForZone(zone));
                     zoneSelectionPanel.add(zoneButton);
@@ -109,15 +111,26 @@ public class ManagementPanel extends JPanel {
         try {
             List<ParkingSpot> spots;
             if (zone == null) {
-                spots = spotDAO.getAllParkingSpots(); // Sửa ở đây
+                spots = spotDAO.getAllParkingSpots(); // Sử dụng spotDAO đã khai báo trong ManagementPanel
             } else {
-                spots = spotDAO.getParkingSpotsByZone(zone.getId()); // Sửa ở đây
+                spots = spotDAO.getParkingSpotsByZone(zone.getId()); // Sử dụng spotDAO đã khai báo trong ManagementPanel
             }
             for (ParkingSpot spot : spots) {
+                String ownerName = "";
+                String ownerPhone = "";
+                if (spot.getLicensePlate() != null && !spot.getLicensePlate().isEmpty()) {
+                    Vehicle vehicle = parkingController.getVehicle(spot.getLicensePlate());
+                    if (vehicle != null) {
+                        ownerName = vehicle.getOwnerName();
+                        ownerPhone = vehicle.getOwnerPhone();
+                    }
+                }
                 Object[] rowData = {
                     spot.getId(),
                     spot.isOccupied() ? "Đã có xe" : "Còn trống",
                     spot.getLicensePlate() == null ? "" : spot.getLicensePlate(),
+                    ownerName,
+                    ownerPhone
                 };
                 tableModel.addRow(rowData);
             }

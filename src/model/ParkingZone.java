@@ -1,70 +1,63 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.List;
-
+/**
+ * Lớp Model đại diện cho một khu vực đỗ xe (Parking Zone).
+ * Cấu trúc của lớp này phản ánh các cột trong bảng 'parking_zones' của database.
+ */
 public class ParkingZone {
-    private final String name;
-    private final VehicleType allowedType;
-    private final List<ParkingSpot> parkingSpots;
 
-    public ParkingZone(String name, int numberOfSpots, VehicleType allowedType) {
+    private int id; // ID của khu vực, được gán bởi database (AUTO_INCREMENT)
+    private String name; // Tên khu vực (ví dụ: "Khu A", "Hầm B1")
+    private VehicleType allowedVehicleType; // Loại xe được phép đỗ
+    private int numberOfSpots; // Tổng số chỗ trong khu vực này
+
+    // Constructor để tạo đối tượng từ dữ liệu đọc ra từ database
+    public ParkingZone(int id, String name, VehicleType allowedVehicleType, int numberOfSpots) {
+        this.id = id;
         this.name = name;
-        this.allowedType = allowedType;
-        this.parkingSpots = new ArrayList<>();
-        for (int i = 1; i <= numberOfSpots; i++) {
-            String spotId = name + "-" + i;
-            this.parkingSpots.add(new ParkingSpot(spotId));
-        }
+        this.allowedVehicleType = allowedVehicleType;
+        this.numberOfSpots = numberOfSpots;
+    }
+    
+    // Constructor để tạo một đối tượng mới trước khi lưu vào DB (chưa có ID)
+    public ParkingZone(String name, VehicleType allowedVehicleType, int numberOfSpots) {
+        this.name = name;
+        this.allowedVehicleType = allowedVehicleType;
+        this.numberOfSpots = numberOfSpots;
+    }
+
+    // --- Getters ---
+    public int getId() {
+        return id;
     }
 
     public String getName() {
         return name;
     }
 
-    public VehicleType getAllowedType() {
-        return allowedType;
-    }
-
-    public List<ParkingSpot> getParkingSpots() {
-        return parkingSpots;
+    public VehicleType getAllowedVehicleType() {
+        return allowedVehicleType;
     }
 
     public int getNumberOfSpots() {
-        return this.parkingSpots.size();
+        return numberOfSpots;
     }
 
-    public int getNumberOfAvailableSpots() {
-        int availableSpots = 0;
-        for (ParkingSpot spot : parkingSpots) {
-            if (spot.isOccupied()) {
-                availableSpots++;
-            }
-        }
-        return availableSpots;
+    // --- Setters ---
+    // ID chỉ nên được set bởi DAO sau khi lưu vào DB
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void addSpot() {
-        int nextSpotNumber = getNumberOfSpots() + 1;
-        String newSpotId = this.name + "-" + nextSpotNumber;
-        this.parkingSpots.add(new ParkingSpot(newSpotId));
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void removeSpot() {
-        if (!this.parkingSpots.isEmpty()) {
-            this.parkingSpots.removeLast();
-        }
+    public void setAllowedVehicleType(VehicleType allowedVehicleType) {
+        this.allowedVehicleType = allowedVehicleType;
     }
 
-    public boolean parkCheck(Vehicle vehicle) {
-        if (vehicle.getType() != this.allowedType) {
-            return false;
-        }
-        for (ParkingSpot spot : parkingSpots) {
-            if (spot.isOccupied()) {
-                return spot.park(vehicle);
-            }
-        }
-        return false;
+    public void setNumberOfSpots(int numberOfSpots) {
+        this.numberOfSpots = numberOfSpots;
     }
 }

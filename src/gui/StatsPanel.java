@@ -1,27 +1,28 @@
 package gui;
 
+import controller.ParkingController;
 import dao.TicketDAO;
 import model.Ticket;
+import model.Vehicle;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.sql.SQLException;
-import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Locale;
 
 public class StatsPanel extends JPanel {
 
     private JTable historyTable;
     private DefaultTableModel tableModel;
     private final TicketDAO ticketDAO;
+    private final ParkingController parkingController; // Thêm ParkingController
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd-MM-yyyy");
-    private final NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
 
     public StatsPanel() {
         this.ticketDAO = new TicketDAO();
+        this.parkingController = new ParkingController(); // Khởi tạo ParkingController
 
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createTitledBorder("Lịch Sử Ra/Vào Bãi"));
@@ -31,7 +32,8 @@ public class StatsPanel extends JPanel {
     }
 
     private void initUI() {
-        String[] columnNames = {"ID Vé", "Biển Số", "Thời Gian Vào", "Thời Gian Ra", "Loại Vé", "Giá Tiền"};
+        // Cập nhật columnNames: bỏ "Loại Vé", "Giá Tiền", thêm "Loại Xe"
+        String[] columnNames = {"ID Vé", "Biển Số", "Thời Gian Vào", "Thời Gian Ra", "Loại Xe"};
 
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
@@ -69,15 +71,20 @@ public class StatsPanel extends JPanel {
             for (Ticket ticket : tickets) {
                 String entryTime = ticket.getEntryTime().format(formatter);
                 String exitTime = (ticket.getExitTime() != null) ? ticket.getExitTime().format(formatter) : "Đang trong bãi";
-                String price = currencyFormatter.format(ticket.getPrice());
+                
+                // Lấy thông tin loại xe
+                String vehicleType = "N/A"; // Mặc định nếu không tìm thấy
+                Vehicle vehicle = parkingController.getVehicle(ticket.getLicensePlate());
+                if (vehicle != null) {
+                    vehicleType = vehicle.getType().name();
+                }
 
                 Object[] rowData = {
                     ticket.getId(),
                     ticket.getLicensePlate(),
                     entryTime,
                     exitTime,
-                    ticket.getTicketType().name(),
-                    price
+                    vehicleType // Thêm loại xe vào đây
                 };
                 tableModel.addRow(rowData);
             }

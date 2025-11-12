@@ -11,7 +11,7 @@ public class MainFrame extends JFrame {
 
     public MainFrame() {
         setTitle("Hệ thống Quản lý Bãi xe - Dashboard");
-        setSize(1200, 800);
+        setSize(1280, 720);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -29,7 +29,7 @@ public class MainFrame extends JFrame {
         navPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         navPanel.setBackground(new Color(220, 220, 220));
 
-        JButton dailyTasksButton = new JButton("Quản Lý Check-in/Check-out");
+        JButton dailyTasksButton = new JButton("Check-in/Check-out");
         JButton monthlyTicketButton = new JButton("Quản Lý Vé Tháng");
         JButton managementButton = new JButton("Quản Lý Bãi Xe");
         JButton statsButton = new JButton("Lịch Sử Ra/Vào");
@@ -65,8 +65,8 @@ public class MainFrame extends JFrame {
         welcomePanel.add(welcomeLabel, BorderLayout.CENTER);
 
         JTabbedPane dailyTasksPanel = new JTabbedPane();
-        dailyTasksPanel.addTab("Check-in Xe Vãng Lai", new CheckInPanel());
-        dailyTasksPanel.addTab("Check-out Xe Ra", new CheckOutPanel());
+        dailyTasksPanel.addTab("Check-in", new CheckInPanel());
+        dailyTasksPanel.addTab("Check-out", new CheckOutPanel());
 
         MonthlyTicketPanel monthlyTicketPanel = new MonthlyTicketPanel();
         ManagementPanel managementPanel = new ManagementPanel();

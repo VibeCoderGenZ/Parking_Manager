@@ -9,17 +9,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Lớp DAO cho đối tượng ParkingSpot.
- */
 public class ParkingSpotDAO {
 
-    /**
-     * Lấy tất cả các chỗ đỗ xe từ database, được sắp xếp theo thứ tự số tự nhiên.
-     */
     public List<ParkingSpot> getAllParkingSpots() throws SQLException {
         List<ParkingSpot> spots = new ArrayList<>();
-        // Sắp xếp theo phần chữ trước, sau đó sắp xếp theo phần số
         String sql = "SELECT * FROM parking_spots ORDER BY SUBSTRING_INDEX(id, '-', 1), CAST(SUBSTRING_INDEX(id, '-', -1) AS UNSIGNED)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -31,12 +24,8 @@ public class ParkingSpotDAO {
         return spots;
     }
     
-    /**
-     * Lấy tất cả các chỗ đỗ xe thuộc về một khu vực cụ thể, được sắp xếp theo thứ tự số tự nhiên.
-     */
     public List<ParkingSpot> getParkingSpotsByZone(int zoneId) throws SQLException {
         List<ParkingSpot> spots = new ArrayList<>();
-        // Sắp xếp theo phần số của ID
         String sql = "SELECT * FROM parking_spots WHERE zone_id = ? ORDER BY CAST(SUBSTRING_INDEX(id, '-', -1) AS UNSIGNED)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -49,8 +38,6 @@ public class ParkingSpotDAO {
         }
         return spots;
     }
-
-    // --- CÁC PHƯƠNG THỨC KHÁC GIỮ NGUYÊN ---
 
     public void deleteParkingSpot(String spotId) throws SQLException {
         String sql = "DELETE FROM parking_spots WHERE id = ?";

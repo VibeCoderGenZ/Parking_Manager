@@ -12,9 +12,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Panel hiển thị lịch sử tất cả các vé đã ra/vào bãi.
- */
 public class StatsPanel extends JPanel {
 
     private JTable historyTable;
@@ -34,7 +31,6 @@ public class StatsPanel extends JPanel {
     }
 
     private void initUI() {
-        // --- Tạo bảng dữ liệu ---
         String[] columnNames = {"ID Vé", "Biển Số", "Thời Gian Vào", "Thời Gian Ra", "Loại Vé", "Giá Tiền"};
 
         tableModel = new DefaultTableModel(columnNames, 0) {
@@ -48,38 +44,28 @@ public class StatsPanel extends JPanel {
         historyTable.setFillsViewportHeight(true);
         historyTable.setRowHeight(25);
         historyTable.setFont(new Font("Arial", Font.PLAIN, 14));
-        // Set độ rộng cho các cột
-        historyTable.getColumnModel().getColumn(0).setPreferredWidth(50); // ID
-        historyTable.getColumnModel().getColumn(2).setPreferredWidth(150); // Time In
-        historyTable.getColumnModel().getColumn(3).setPreferredWidth(150); // Time Out
+        historyTable.getColumnModel().getColumn(0).setPreferredWidth(50);
+        historyTable.getColumnModel().getColumn(2).setPreferredWidth(150);
+        historyTable.getColumnModel().getColumn(3).setPreferredWidth(150);
 
         JScrollPane scrollPane = new JScrollPane(historyTable);
 
-        // --- Tạo panel chứa nút bấm ---
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton refreshButton = new JButton("Làm Mới Dữ Liệu");
         topPanel.add(refreshButton);
 
-        // --- Gắn hành động ---
         refreshButton.addActionListener(e -> loadTicketHistory());
 
-        // --- Thêm các thành phần vào panel chính ---
         add(topPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
     }
 
-    /**
-     * Tải toàn bộ lịch sử vé từ database và cập nhật vào bảng.
-     */
     private void loadTicketHistory() {
         try {
-            // Gọi DAO để lấy tất cả các vé
             List<Ticket> tickets = ticketDAO.getAllTickets();
 
-            // Xóa dữ liệu cũ
             tableModel.setRowCount(0);
 
-            // Đổ dữ liệu mới vào bảng
             for (Ticket ticket : tickets) {
                 String entryTime = ticket.getEntryTime().format(formatter);
                 String exitTime = (ticket.getExitTime() != null) ? ticket.getExitTime().format(formatter) : "Đang trong bãi";

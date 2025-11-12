@@ -11,12 +11,6 @@ import java.util.List;
 
 public class UserDAO {
 
-    /**
-     * Lấy tất cả người dùng từ database.
-     *
-     * @return Danh sách các đối tượng User.
-     * @throws SQLException nếu có lỗi khi truy vấn database.
-     */
     public List<User> getAllUsers() throws SQLException {
         List<User> users = new ArrayList<>();
         String sql = "SELECT * FROM users";
@@ -33,13 +27,6 @@ public class UserDAO {
         return users;
     }
 
-    /**
-     * Lấy một người dùng từ database dựa vào username.
-     *
-     * @param username Tên người dùng cần tìm.
-     * @return Đối tượng User nếu tìm thấy, ngược lại trả về null.
-     * @throws SQLException nếu có lỗi khi truy vấn database.
-     */
     public User getUserByUsername(String username) throws SQLException {
         String sql = "SELECT * FROM users WHERE username = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -53,15 +40,9 @@ public class UserDAO {
                 }
             }
         }
-        return null; // Trả về null nếu không tìm thấy
+        return null;
     }
 
-    /**
-     * Thêm một người dùng mới vào database.
-     *
-     * @param user Đối tượng User chứa thông tin cần thêm.
-     * @throws SQLException nếu có lỗi khi thực thi (ví dụ: username đã tồn tại).
-     */
     public void addUser(User user) throws SQLException {
         String sql = "INSERT INTO users(username, password) VALUES(?, ?)";
         try (Connection conn = DBConnection.getConnection();
@@ -73,12 +54,6 @@ public class UserDAO {
         }
     }
 
-    /**
-     * Cập nhật thông tin (chủ yếu là mật khẩu) của người dùng.
-     *
-     * @param user Đối tượng User với thông tin mới.
-     * @throws SQLException nếu có lỗi khi thực thi.
-     */
     public void updateUser(User user) throws SQLException {
         String sql = "UPDATE users SET password = ? WHERE username = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -90,12 +65,6 @@ public class UserDAO {
         }
     }
 
-    /**
-     * Xóa một người dùng khỏi database dựa vào username.
-     *
-     * @param username Tên người dùng cần xóa.
-     * @throws SQLException nếu có lỗi khi thực thi.
-     */
     public void deleteUser(String username) throws SQLException {
         String sql = "DELETE FROM users WHERE username = ?";
         try (Connection conn = DBConnection.getConnection();

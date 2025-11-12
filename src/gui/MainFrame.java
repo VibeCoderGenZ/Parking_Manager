@@ -3,9 +3,6 @@ package gui;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * Lớp giao diện cho cửa sổ chính của ứng dụng, được thiết kế theo dạng Dashboard.
- */
 public class MainFrame extends JFrame {
 
     private JPanel navPanel;
@@ -28,18 +25,16 @@ public class MainFrame extends JFrame {
 
     private void createNavPanel() {
         navPanel = new JPanel();
-        navPanel.setLayout(new GridLayout(8, 1, 10, 10)); // Tăng số hàng
+        navPanel.setLayout(new GridLayout(8, 1, 10, 10));
         navPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         navPanel.setBackground(new Color(220, 220, 220));
 
-        // --- Tạo các nút điều hướng mới ---
         JButton dailyTasksButton = new JButton("Quản Lý Check-in/Check-out");
         JButton monthlyTicketButton = new JButton("Quản Lý Vé Tháng");
         JButton managementButton = new JButton("Quản Lý Bãi Xe");
         JButton statsButton = new JButton("Lịch Sử Ra/Vào");
         JButton logoutButton = new JButton("Đăng xuất");
 
-        // --- Gắn hành động cho các nút ---
         dailyTasksButton.addActionListener(e -> cardLayout.show(contentPanel, "DAILY_TASKS"));
         monthlyTicketButton.addActionListener(e -> cardLayout.show(contentPanel, "MONTHLY_TICKET"));
         managementButton.addActionListener(e -> cardLayout.show(contentPanel, "MANAGEMENT"));
@@ -50,7 +45,6 @@ public class MainFrame extends JFrame {
             SwingUtilities.invokeLater(() -> new LoginFrame().setVisible(true));
         });
 
-        // Thêm các nút vào thanh điều hướng
         navPanel.add(dailyTasksButton);
         navPanel.add(monthlyTicketButton);
         navPanel.add(new JSeparator());
@@ -65,7 +59,6 @@ public class MainFrame extends JFrame {
         cardLayout = new CardLayout();
         contentPanel = new JPanel(cardLayout);
 
-        // --- Tạo các panel chức năng ---
         JPanel welcomePanel = new JPanel(new BorderLayout());
         JLabel welcomeLabel = new JLabel("Quản Lý Bãi Gửi Xe", SwingConstants.CENTER);
         welcomeLabel.setFont(new Font("Arial", Font.BOLD, 28));
@@ -79,7 +72,6 @@ public class MainFrame extends JFrame {
         ManagementPanel managementPanel = new ManagementPanel();
         StatsPanel statsPanel = new StatsPanel();
 
-        // --- Thêm các panel vào contentPanel với tên định danh ---
         contentPanel.add(welcomePanel, "WELCOME");
         contentPanel.add(dailyTasksPanel, "DAILY_TASKS");
         contentPanel.add(monthlyTicketPanel, "MONTHLY_TICKET");

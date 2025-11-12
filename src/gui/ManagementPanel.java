@@ -2,7 +2,7 @@ package gui;
 
 import controller.ParkingController;
 import controller.ParkingException;
-import dao.ParkingSpotDAO; // Thêm import
+import dao.ParkingSpotDAO;
 import dao.ParkingZoneDAO;
 import model.ParkingSpot;
 import model.ParkingZone;
@@ -15,25 +15,22 @@ import java.awt.*;
 import java.sql.SQLException;
 import java.util.List;
 
-/**
- * Panel quản lý bãi xe với bộ lọc khu vực và bảng dữ liệu chi tiết.
- */
 public class ManagementPanel extends JPanel {
 
     private final ParkingController parkingController;
     private final ParkingZoneDAO zoneDAO;
-    private final ParkingSpotDAO spotDAO; // Khai báo và khởi tạo spotDAO ở đây
+    private final ParkingSpotDAO spotDAO;
 
     private JTable parkingTable;
     private DefaultTableModel tableModel;
     private JPanel zoneSelectionPanel;
-    private List<ParkingZone> allZones; // Khai báo lại biến allZones
+    private List<ParkingZone> allZones;
     private ParkingZone currentZone;
 
     public ManagementPanel() {
         this.parkingController = new ParkingController();
         this.zoneDAO = new ParkingZoneDAO();
-        this.spotDAO = new ParkingSpotDAO(); // Khởi tạo spotDAO
+        this.spotDAO = new ParkingSpotDAO();
 
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createTitledBorder("Quản Lý Chi Tiết Bãi Đỗ Xe"));
@@ -43,13 +40,11 @@ public class ManagementPanel extends JPanel {
     }
 
     private void initUI() {
-        // --- Khu vực chọn Zone (NORTH) ---
         zoneSelectionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JScrollPane zoneScrollPane = new JScrollPane(zoneSelectionPanel);
         zoneScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         zoneScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
 
-        // --- Bảng dữ liệu (CENTER) ---
         String[] columnNames = {"Mã Chỗ Đỗ", "Trạng Thái", "Biển Số Xe", "Tên Chủ Xe", "SĐT Chủ Xe"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override public boolean isCellEditable(int row, int column) { return false; }
@@ -59,7 +54,6 @@ public class ManagementPanel extends JPanel {
         parkingTable.setRowHeight(25);
         JScrollPane tableScrollPane = new JScrollPane(parkingTable);
 
-        // --- Khu vực công cụ (SOUTH) ---
         JPanel toolPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton createZoneButton = new JButton("Tạo Khu Vực Mới");
         JButton addSpotButton = new JButton("Thêm Chỗ Đỗ");
@@ -68,12 +62,10 @@ public class ManagementPanel extends JPanel {
         toolPanel.add(addSpotButton);
         toolPanel.add(deleteSpotButton);
 
-        // --- Gắn hành động ---
         createZoneButton.addActionListener(e -> handleCreateNewZone());
         addSpotButton.addActionListener(e -> handleAddSpots());
         deleteSpotButton.addActionListener(e -> handleDeleteSpot());
 
-        // --- Thêm vào panel chính ---
         add(zoneScrollPane, BorderLayout.NORTH);
         add(tableScrollPane, BorderLayout.CENTER);
         add(toolPanel, BorderLayout.SOUTH);
@@ -82,7 +74,7 @@ public class ManagementPanel extends JPanel {
     private void loadZoneButtons() {
         zoneSelectionPanel.removeAll();
         try {
-            allZones = zoneDAO.getAllParkingZones(); // Sử dụng allZones đã được khai báo
+            allZones = zoneDAO.getAllParkingZones();
             if (allZones.isEmpty()) {
                 zoneSelectionPanel.add(new JLabel("Chưa có khu vực nào."));
                 tableModel.setRowCount(0);
@@ -91,7 +83,7 @@ public class ManagementPanel extends JPanel {
                 allButton.addActionListener(e -> loadSpotsForZone(null));
                 zoneSelectionPanel.add(allButton);
 
-                for (ParkingZone zone : allZones) { // Sử dụng allZones đã được khai báo
+                for (ParkingZone zone : allZones) {
                     JButton zoneButton = new JButton(zone.getName() + " (" + zone.getAllowedVehicleType() + ")");
                     zoneButton.addActionListener(e -> loadSpotsForZone(zone));
                     zoneSelectionPanel.add(zoneButton);
@@ -111,9 +103,9 @@ public class ManagementPanel extends JPanel {
         try {
             List<ParkingSpot> spots;
             if (zone == null) {
-                spots = spotDAO.getAllParkingSpots(); // Sử dụng spotDAO đã khai báo trong ManagementPanel
+                spots = spotDAO.getAllParkingSpots();
             } else {
-                spots = spotDAO.getParkingSpotsByZone(zone.getId()); // Sử dụng spotDAO đã khai báo trong ManagementPanel
+                spots = spotDAO.getParkingSpotsByZone(zone.getId());
             }
             for (ParkingSpot spot : spots) {
                 String ownerName = "";

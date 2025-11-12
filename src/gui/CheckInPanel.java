@@ -10,10 +10,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.sql.SQLException;
 
-/**
- * Panel chứa giao diện và logic cho chức năng Check-in xe.
- * Tự động xử lý cho cả xe vãng lai và xe vé tháng.
- */
 public class CheckInPanel extends JPanel {
 
     private final ParkingController parkingController;
@@ -61,20 +57,17 @@ public class CheckInPanel extends JPanel {
         }
 
         try {
-            // Kiểm tra xe vãng lai mới
             Vehicle vehicle = parkingController.getVehicle(licensePlate);
             if (vehicle == null) {
                 if (!promptForNewVehicleInfo(licensePlate)) {
-                    return; // Dừng lại nếu người dùng hủy
+                    return;
                 }
             }
 
-            // Gọi controller để check-in. Controller sẽ tự động xử lý logic vé tháng.
-            // Chú ý: Phương thức checkIn trong ParkingController giờ chỉ nhận 2 tham số.
             Ticket createdTicket = parkingController.checkIn(licensePlate, spotId);
 
             String successMessage;
-            if (createdTicket.getPrice() == 0) { // Dấu hiệu của xe vé tháng được check-in
+            if (createdTicket.getPrice() == 0) {
                  successMessage = String.format(
                     "XE VÉ THÁNG ĐÃ VÀO BÃI!\n\nBiển số: %s\nChỗ đỗ: %s\nThời gian vào: %s",
                     createdTicket.getLicensePlate(), createdTicket.getSpotId(),

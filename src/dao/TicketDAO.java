@@ -8,26 +8,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Lớp DAO cho đối tượng Ticket.
- */
 public class TicketDAO {
 
-    /**
-     * Kiểm tra xem một chỗ đỗ đã từng được ghi nhận trong bất kỳ vé nào chưa.
-     * @param spotId ID của chỗ đỗ cần kiểm tra.
-     * @return true nếu đã có lịch sử, false nếu chưa.
-     * @throws SQLException nếu có lỗi khi truy vấn.
-     */
     public boolean hasHistoryForSpot(String spotId) throws SQLException {
-        // Câu lệnh này đếm số lượng vé có spot_id tương ứng.
-        // LIMIT 1 để tối ưu, chỉ cần tìm thấy 1 là đủ.
         String sql = "SELECT 1 FROM tickets WHERE spot_id = ? LIMIT 1";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, spotId);
             try (ResultSet rs = pstmt.executeQuery()) {
-                // Nếu rs.next() là true, có nghĩa là đã tìm thấy ít nhất 1 dòng.
                 return rs.next();
             }
         }
@@ -47,7 +35,6 @@ public class TicketDAO {
         return null;
     }
 
-    // --- CÁC PHƯƠNG THỨC CŨ ---
     public void addTicket(Ticket ticket) throws SQLException {
         String sql = "INSERT INTO tickets(license_plate, spot_id, entry_time, ticket_type, expiry_date, price) VALUES(?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();

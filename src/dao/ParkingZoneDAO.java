@@ -7,17 +7,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Lớp DAO cho đối tượng ParkingZone.
- */
 public class ParkingZoneDAO {
 
-    /**
-     * Lấy một khu vực đỗ xe bằng ID của nó.
-     * @param zoneId ID của khu vực cần tìm.
-     * @return Đối tượng ParkingZone nếu tìm thấy, ngược lại là null.
-     * @throws SQLException nếu có lỗi khi truy vấn.
-     */
     public ParkingZone getZoneById(int zoneId) throws SQLException {
         String sql = "SELECT pz.id, pz.name, pz.number_of_spots, vt.name AS vehicle_type_name " +
                      "FROM parking_zones pz " +

@@ -4,16 +4,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-/**
- * Lớp này chịu trách nhiệm quản lý kết nối đến cơ sở dữ liệu.
- */
 public class DBConnection {
 
-    // --- THAY ĐỔI CÁC THÔNG SỐ NÀY CHO PHÙ HỢP VỚI DATABASE CỦA BẠN ---
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/parking_manager"; // Ví dụ cho MySQL
-    private static final String USER = "root";       // Tên người dùng database
-    private static final String PASS = "1234";   // Mật khẩu database
-    // --------------------------------------------------------------------
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/parking_manager";
+    private static final String USER = "root";
+    private static final String PASS = "1234";
 
     public static Connection getConnection() throws SQLException {
         try {
@@ -24,7 +19,6 @@ public class DBConnection {
         return DriverManager.getConnection(DB_URL, USER, PASS);
     }
 
-    // TEST KẾT NỐI ĐẾN DATABASE
     public static void main(String[] args) {
         try (Connection connection = DBConnection.getConnection()) {
             if (connection != null) {

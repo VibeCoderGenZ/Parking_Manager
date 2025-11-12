@@ -53,8 +53,8 @@ CREATE TABLE tickets (
     entry_time DATETIME NOT NULL,
     exit_time DATETIME,
     price BIGINT,
-    ticket_type VARCHAR(20) NOT NULL, -- 'per_hour', 'per_turn', 'per_month'
-    expiry_date DATETIME, -- Chỉ dành cho vé tháng
+    ticket_type VARCHAR(20) NOT NULL,
+    expiry_date DATETIME,
     FOREIGN KEY (license_plate) REFERENCES vehicles(license_plate),
     FOREIGN KEY (spot_id) REFERENCES parking_spots(id)
 );

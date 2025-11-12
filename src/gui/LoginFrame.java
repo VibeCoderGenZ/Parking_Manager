@@ -135,21 +135,7 @@ public class LoginFrame extends JFrame {
         } catch (SQLException ex) {
             // Lỗi từ tầng database
             JOptionPane.showMessageDialog(this, "Lỗi kết nối cơ sở dữ liệu. Vui lòng kiểm tra lại.", "Lỗi Database", JOptionPane.ERROR_MESSAGE);
-            ex.printStackTrace(); // In ra console để lập trình viên debug
+            ex.printStackTrace();
         }
-    }
-
-    /**
-     * Phương thức main để khởi chạy ứng dụng.
-     * Đây sẽ là điểm bắt đầu của toàn bộ chương trình.
-     */
-    public static void main(String[] args) {
-        // Chạy giao diện trên Event Dispatch Thread (EDT) để đảm bảo an toàn luồng cho Swing
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new LoginFrame().setVisible(true);
-            }
-        });
     }
 }

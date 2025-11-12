@@ -89,9 +89,6 @@ public class ParkingController {
             throw new ParkingException("Không tìm thấy xe có biển số " + licensePlate + " trong bãi.");
         }
         ticket.setExitTime(LocalDateTime.now());
-        if (ticket.getTicketType() == TicketType.PER_HOUR) {
-            ticket.setPrice(calculatePrice(ticket));
-        }
         ticketDAO.updateTicket(ticket);
         ParkingSpot spot = parkingSpotDAO.getParkingSpotById(ticket.getSpotId());
         if (spot != null) {
@@ -108,17 +105,6 @@ public class ParkingController {
             throw new ParkingException("Lỗi nội bộ: Không tìm thấy thông tin xe.");
         }
         return switch (ticket.getTicketType()) {
-            case PER_HOUR -> {
-                if (ticket.getExitTime() == null) yield 0;
-                long hourlyRate = switch (vehicle.getType()) {
-                    case BICYCLE -> 500;
-                    case BIKE -> 1000;
-                    case CAR -> 10000;
-                };
-                Duration duration = Duration.between(ticket.getEntryTime(), ticket.getExitTime());
-                long hours = (long) Math.ceil(duration.toMinutes() / 60.0);
-                yield hours * hourlyRate;
-            }
             case PER_TURN -> switch (vehicle.getType()) {
                 case BICYCLE -> 2000;
                 case BIKE -> 5000;
@@ -127,7 +113,7 @@ public class ParkingController {
             case PER_MONTH -> getMonthlyPrice(vehicle.getType());
         };
     }
-    
+
     private long getMonthlyPrice(VehicleType type) {
         return switch (type) {
             case BICYCLE -> 50000;
@@ -139,7 +125,7 @@ public class ParkingController {
     public Vehicle getVehicle(String licensePlate) throws SQLException {
         return vehicleDAO.getVehicleByLicensePlate(licensePlate);
     }
-    
+
     public void addSpotsToZone(ParkingZone zone, int numberOfSpots) throws SQLException {
         int maxSpotNumber = parkingSpotDAO.getParkingSpotsByZone(zone.getId()).stream().map(spot -> spot.getId().substring(spot.getId().lastIndexOf('-') + 1)).mapToInt(Integer::parseInt).max().orElse(0);
         for (int i = 1; i <= numberOfSpots; i++) {

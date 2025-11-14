@@ -10,10 +10,7 @@ import java.util.List;
 public class ParkingZoneDAO {
 
     public ParkingZone getZoneById(int zoneId) throws SQLException {
-        String sql = "SELECT pz.id, pz.name, pz.number_of_spots, vt.name AS vehicle_type_name " +
-                     "FROM parking_zones pz " +
-                     "JOIN vehicle_type vt ON pz.allowed_vehicle_type_id = vt.id " +
-                     "WHERE pz.id = ?";
+        String sql = "SELECT * FROM parking_zones WHERE id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, zoneId);
@@ -28,9 +25,7 @@ public class ParkingZoneDAO {
 
     public List<ParkingZone> getAllParkingZones() throws SQLException {
         List<ParkingZone> zones = new ArrayList<>();
-        String sql = "SELECT pz.id, pz.name, pz.number_of_spots, vt.name AS vehicle_type_name " +
-                     "FROM parking_zones pz " +
-                     "JOIN vehicle_type vt ON pz.allowed_vehicle_type_id = vt.id";
+        String sql = "SELECT * FROM parking_zones";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
@@ -42,12 +37,14 @@ public class ParkingZoneDAO {
     }
 
     public void addParkingZone(ParkingZone zone) throws SQLException {
-        String sql = "INSERT INTO parking_zones(name, allowed_vehicle_type_id, number_of_spots) VALUES(?, ?, ?)";
+        String sql = "INSERT INTO parking_zones(name, allowed_vehicle_type, number_of_spots) VALUES(?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            
             pstmt.setString(1, zone.getName());
-            pstmt.setInt(2, getVehicleTypeId(zone.getAllowedVehicleType(), conn));
+            pstmt.setString(2, zone.getAllowedVehicleType().name());
             pstmt.setInt(3, zone.getNumberOfSpots());
+            
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) {
                 try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
@@ -59,25 +56,11 @@ public class ParkingZoneDAO {
         }
     }
 
-    private int getVehicleTypeId(VehicleType type, Connection conn) throws SQLException {
-        String sql = "SELECT id FROM vehicle_type WHERE name = ?";
-        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, type.name());
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt("id");
-                } else {
-                    throw new SQLException("VehicleType '" + type.name() + "' not found in database.");
-                }
-            }
-        }
-    }
-
     private ParkingZone mapResultSetToParkingZone(ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
         String name = rs.getString("name");
+        VehicleType allowedType = VehicleType.valueOf(rs.getString("allowed_vehicle_type"));
         int numberOfSpots = rs.getInt("number_of_spots");
-        VehicleType allowedType = VehicleType.valueOf(rs.getString("vehicle_type_name"));
         return new ParkingZone(id, name, allowedType, numberOfSpots);
     }
 }

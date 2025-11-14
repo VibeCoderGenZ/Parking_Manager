@@ -2,8 +2,8 @@ package model;
 
 public class ParkingSpot {
 
-    private String id;
-    private int zoneId;
+    private final String id;
+    private final int zoneId;
     private boolean isOccupied;
     private String licensePlate;
 
@@ -35,14 +35,6 @@ public class ParkingSpot {
 
     public String getLicensePlate() {
         return licensePlate;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setZoneId(int zoneId) {
-        this.zoneId = zoneId;
     }
 
     public void setOccupied(boolean occupied) {

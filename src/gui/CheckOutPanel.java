@@ -7,8 +7,7 @@ import model.Ticket;
 import javax.swing.*;
 import java.awt.*;
 import java.sql.SQLException;
-import java.text.NumberFormat;
-import java.util.Locale;
+import java.time.format.DateTimeFormatter;
 
 public class CheckOutPanel extends JPanel {
 
@@ -16,12 +15,14 @@ public class CheckOutPanel extends JPanel {
 
     private JTextField licensePlateField;
     private JButton checkOutButton;
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd-MM-yyyy");
+
 
     public CheckOutPanel() {
         this.parkingController = new ParkingController();
 
         setLayout(new GridBagLayout());
-        setBorder(BorderFactory.createTitledBorder("Check-out Xe Ra Bãi"));
+        setBorder(BorderFactory.createTitledBorder("Cho Xe Ra Bãi"));
 
         initAndLayoutComponents();
 
@@ -30,7 +31,7 @@ public class CheckOutPanel extends JPanel {
 
     private void initAndLayoutComponents() {
         licensePlateField = new JTextField(15);
-        checkOutButton = new JButton("Xác nhận Check-out và Tính tiền");
+        checkOutButton = new JButton("Xác nhận ra bãi");
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
@@ -38,7 +39,7 @@ public class CheckOutPanel extends JPanel {
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        add(new JLabel("Biển số xe cần check-out:"), gbc);
+        add(new JLabel("Biển số xe cần ra bãi:"), gbc);
         gbc.gridx = 1;
         gbc.anchor = GridBagConstraints.LINE_START;
         add(licensePlateField, gbc);
@@ -64,17 +65,13 @@ public class CheckOutPanel extends JPanel {
         try {
             Ticket updatedTicket = parkingController.checkOut(licensePlate);
 
-            NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-            String formattedPrice = currencyFormatter.format(updatedTicket.getPrice());
-
             String successMessage = String.format(
-                "Check-out thành công!\n\nBiển số: %s\nThời gian vào: %s\nThời gian ra: %s\n\nTổng tiền: %s",
+                "Check-out thành công!\n\nBiển số: %s\nThời gian vào: %s\nThời gian ra: %s",
                 updatedTicket.getLicensePlate(),
-                updatedTicket.getEntryTime().toString(),
-                updatedTicket.getExitTime().toString(),
-                formattedPrice
+                updatedTicket.getEntryTime().format(formatter),
+                updatedTicket.getExitTime().format(formatter)
             );
-            JOptionPane.showMessageDialog(this, successMessage, "Hóa Đơn Thanh Toán", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, successMessage, "Check-out Thành Công", JOptionPane.INFORMATION_MESSAGE);
 
             licensePlateField.setText("");
 

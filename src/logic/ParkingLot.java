@@ -48,7 +48,10 @@ public class ParkingLot {
         ArrayList<Vehicle> result = new ArrayList<>();
         if (ownerName == null)
             return result;
-        String target = Vehicle.chuanHoaHoTen(ownerName); // chuẩn hóa giống lúc lưu
+        String trimmed = ownerName.trim();
+        if (trimmed.isEmpty())
+            return result;
+        String target = Vehicle.chuanHoaHoTen(trimmed);
         for (Vehicle v : vehicles) {
             String name = v.getOwnerName();
             if (name != null && name.equalsIgnoreCase(target)) {
@@ -95,7 +98,7 @@ public class ParkingLot {
      * *
      * Methods for Spots
      * Tìm kiếm
-     * Thêm/xóa/reset
+     * Thêm/xóa
      * *
      * **************************************************************************
      */
@@ -185,22 +188,20 @@ public class ParkingLot {
         if (occupied) {
             if (plate == null || plate.isEmpty())
                 return false;
+            // Kiểm tra xe có tồn tại không
+            Vehicle v = getVehicleByLicensePlate(plate);
+            if (v == null)
+                return false;
+            // Kiểm tra loại xe có khớp không
+            if (v.getType() != allowedType)
+                return false;
+            // Kiểm tra không trùng biển số với spot khác
             if (getSpotByLicensePlate(plate) != null)
                 return false;
         } else {
             plate = null;
         }
         spots.add(new ParkingSpot(spotID, allowedType, plate, occupied));
-        return true;
-    }
-
-    public boolean removeSpot(int spotID) {
-        ParkingSpot spot = getSpotBySpotID(spotID);
-        if (spot == null)
-            return false;
-        if (spot.isOccupied())
-            return false;
-        spots.remove(spot);
         return true;
     }
 
@@ -276,15 +277,26 @@ public class ParkingLot {
             LocalDateTime exitTime) {
         if (licensePlate == null || entryTime == null)
             return false;
+        String plate = licensePlate.trim();
+        if (plate.isEmpty())
+            return false;
         if (getTicketByTicketID(ticketID) != null)
+            return false;
+        // Kiểm tra xe có tồn tại không
+        if (getVehicleByLicensePlate(plate) == null)
             return false;
         ParkingSpot spot = getSpotBySpotID(spotID);
         if (spot == null)
             return false;
-        // Nếu vé active thì spot phải occupied
-        if (exitTime == null && !spot.isOccupied())
-            return false;
-        tickets.add(new Ticket(ticketID, spotID, licensePlate.trim(), entryTime, exitTime));
+        // Nếu vé active thì spot phải occupied và khớp biển số
+        if (exitTime == null) {
+            if (!spot.isOccupied())
+                return false;
+            String spotPlate = spot.getLicensePlate();
+            if (spotPlate == null || !spotPlate.equalsIgnoreCase(plate))
+                return false;
+        }
+        tickets.add(new Ticket(ticketID, spotID, plate, entryTime, exitTime));
         return true;
     }
 
@@ -292,22 +304,24 @@ public class ParkingLot {
     public boolean parkVehicleAuto(String licensePlate) {
         if (licensePlate == null || licensePlate.isBlank())
             return false;
-        Vehicle v = getVehicleByLicensePlate(licensePlate);
+        String plate = licensePlate.trim();
+        if (plate.isEmpty())
+            return false;
+        Vehicle v = getVehicleByLicensePlate(plate);
         if (v == null)
             return false;
-        if (getSpotByLicensePlate(licensePlate) != null)
+        if (getSpotByLicensePlate(plate) != null)
             return false;
-        Ticket t = getTicketByLicensePlate(licensePlate);
+        Ticket t = getTicketByLicensePlate(plate);
         if (t != null && t.getExitTime() == null)
             return false;
         ParkingSpot spot = findFirstAvailableSpot(v.getType());
         if (spot == null)
             return false;
         spot.setOccupied(true);
-        spot.setLicensePlate(licensePlate.trim());
+        spot.setLicensePlate(plate);
         int newTicketID = tickets.size() + 1;
-        if (!addTicket(newTicketID, spot.getSpotID(), licensePlate.trim(), LocalDateTime.now(), null)) {
-            // rollback nếu thất bại
+        if (!addTicket(newTicketID, spot.getSpotID(), plate, LocalDateTime.now(), null)) {
             spot.setOccupied(false);
             spot.setLicensePlate(null);
             return false;
@@ -317,19 +331,36 @@ public class ParkingLot {
 
     // Lấy phương tiện ra
     public boolean retrieveVehicle(String licensePlate) {
-        if (licensePlate == null)
+        if (licensePlate == null || licensePlate.isBlank())
             return false;
-        ParkingSpot spot = getSpotByLicensePlate(licensePlate);
-        Ticket ticket = getTicketByLicensePlate(licensePlate);
+        String plate = licensePlate.trim();
+        if (plate.isEmpty())
+            return false;
+        ParkingSpot spot = getSpotByLicensePlate(plate);
+        Ticket ticket = getTicketByLicensePlate(plate);
         if (spot == null || ticket == null)
             return false;
         if (!spot.isOccupied())
             return false;
         if (ticket.getExitTime() != null)
-            return false; // vé đã kết thúc
+            return false;
         spot.setOccupied(false);
         spot.setLicensePlate(null);
         ticket.setExitTime(LocalDateTime.now());
         return true;
     }
+
+    // Các method reset
+    public void resetVehicles() {
+        vehicles.clear();
+    }
+
+    public void resetTickets() {
+        tickets.clear();
+    }
+
+    public void resetSpots() {
+        spots.clear();
+    }
+
 }

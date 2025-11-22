@@ -46,7 +46,13 @@ public class DataManager {
                     continue;
                 String[] parts = line.split(",");
                 if (parts.length >= 4) {
-                    list.add(new Vehicle(parts[0], VehicleType.valueOf(parts[1]), parts[2], parts[3]));
+                    // SỬA: Thêm .trim() vào tất cả các phần để xóa khoảng trắng thừa
+                    String plate = parts[0].trim();
+                    VehicleType type = VehicleType.valueOf(parts[1].trim()); // Lỗi cũ nằm ở đây
+                    String owner = parts[2].trim();
+                    String phone = parts[3].trim();
+
+                    list.add(new Vehicle(plate, type, owner, phone));
                 }
             }
         }
@@ -65,9 +71,14 @@ public class DataManager {
                     continue;
                 String[] parts = line.split(",");
                 if (parts.length >= 4) {
-                    String plate = parts[2].equals("null") ? null : parts[2];
-                    list.add(new ParkingSpot(Integer.parseInt(parts[0]), VehicleType.valueOf(parts[1]), plate,
-                            Boolean.parseBoolean(parts[3])));
+                    // SỬA: Thêm .trim()
+                    int id = Integer.parseInt(parts[0].trim());
+                    VehicleType type = VehicleType.valueOf(parts[1].trim());
+                    String rawPlate = parts[2].trim();
+                    String plate = rawPlate.equals("null") ? null : rawPlate;
+                    boolean occupied = Boolean.parseBoolean(parts[3].trim());
+
+                    list.add(new ParkingSpot(id, type, plate, occupied));
                 }
             }
         }

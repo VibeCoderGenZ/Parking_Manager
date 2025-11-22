@@ -308,27 +308,35 @@ public class ParkingLot {
         if (licensePlate == null || licensePlate.isBlank())
             return false;
         String plate = licensePlate.trim();
-        if (plate.isEmpty())
-            return false;
+
+        // 1. Kiểm tra xe có trong hệ thống chưa
         Vehicle v = getVehicleByLicensePlate(plate);
         if (v == null)
-            return false;
+            return false; // Chưa đăng ký xe thì không cho đỗ
+
+        // 2. Kiểm tra xe có đang đỗ ở đâu đó không
         if (getSpotByLicensePlate(plate) != null)
             return false;
+
+        // 3. Kiểm tra có vé nào chưa thanh toán không
         Ticket t = getTicketByLicensePlate(plate);
         if (t != null && t.getExitTime() == null)
             return false;
+
+        // 4. Tìm chỗ trống phù hợp
         ParkingSpot spot = findFirstAvailableSpot(v.getType());
         if (spot == null)
-            return false;
+            return false; // Hết chỗ
+
+        // 5. Thực hiện đỗ xe
         spot.setOccupied(true);
         spot.setLicensePlate(plate);
+
+        // 6. Tạo vé mới
         int newTicketID = tickets.size() + 1;
-        if (!addTicket(newTicketID, spot.getSpotID(), plate, LocalDateTime.now(), null)) {
-            spot.setOccupied(false);
-            spot.setLicensePlate(null);
-            return false;
-        }
+        Ticket newTicket = new Ticket(newTicketID, spot.getSpotID(), plate, LocalDateTime.now(), null);
+        tickets.add(newTicket);
+
         return true;
     }
 
@@ -337,19 +345,24 @@ public class ParkingLot {
         if (licensePlate == null || licensePlate.isBlank())
             return false;
         String plate = licensePlate.trim();
-        if (plate.isEmpty())
-            return false;
-        ParkingSpot spot = getSpotByLicensePlate(plate);
+
+        // 1. Tìm vé đang hoạt động của xe này
         Ticket ticket = getTicketByLicensePlate(plate);
-        if (spot == null || ticket == null)
-            return false;
-        if (!spot.isOccupied())
-            return false;
-        if (ticket.getExitTime() != null)
-            return false;
+        if (ticket == null || ticket.getExitTime() != null)
+            return false; // Không có vé hoặc vé đã đóng
+
+        // 2. Tìm chỗ đỗ của xe này
+        ParkingSpot spot = getSpotBySpotID(ticket.getSpotID());
+        if (spot == null)
+            return false; // Lỗi dữ liệu
+
+        // 3. Cập nhật giờ ra cho vé
+        ticket.setExitTime(LocalDateTime.now());
+
+        // 4. Giải phóng chỗ đỗ
         spot.setOccupied(false);
         spot.setLicensePlate(null);
-        ticket.setExitTime(LocalDateTime.now());
+
         return true;
     }
 
@@ -368,6 +381,11 @@ public class ParkingLot {
 
     // Lưu dữ liệu
     public void saveData() throws IOException {
+        dataManager.saveData(vehicles, spots, tickets);
+    }
+
+    // Hàm lưu tất cả dữ liệu lại (Dùng khi tắt app)
+    public void saveAllData() throws IOException {
         dataManager.saveData(vehicles, spots, tickets);
     }
 }

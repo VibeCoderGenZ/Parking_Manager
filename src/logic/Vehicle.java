@@ -15,9 +15,16 @@ public class Vehicle {
 
     // Hàm chuẩn hóa xâu họ tên
     public static String chuanHoaHoTen(String hoTen) {
-        String[] a = hoTen.trim().split("\\s+");
+        if (hoTen == null)
+            return "";
+        String trimmed = hoTen.trim();
+        if (trimmed.isEmpty())
+            return "";
+        String[] a = trimmed.split("\\s+");
         StringBuilder result = new StringBuilder();
         for (String x : a) {
+            if (x.isEmpty())
+                continue;
             result.append(Character.toUpperCase(x.charAt(0)))
                     .append(x.substring(1).toLowerCase())
                     .append(" ");

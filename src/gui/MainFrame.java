@@ -49,24 +49,23 @@ public class MainFrame extends JFrame {
         navPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         navPanel.setBackground(new Color(220, 220, 220));
 
-        JButton dailyTasksButton = new JButton("Xuất Vé / Thu Vé");
-        JButton vehicleButton = new JButton("Quản Lý Phương Tiện");
-        JButton managementButton = new JButton("Quản Lý Bãi Xe");
-        JButton statsButton = new JButton("Quản Lý Vé");
-        JButton logoutButton = new JButton("Đăng xuất");
+        JButton createTicketButton = new JButton("Xuất Vé / Thu Vé");
+        JButton ticketManagementButton = new JButton("Quản Lý Vé");
+        JButton vehicleManagementButton = new JButton("Quản Lý Phương Tiện");
+        JButton spotManagementButton = new JButton("Quản Lý Bãi Xe");
+        JButton logoutButton = new JButton("Thoát");
 
-        dailyTasksButton.addActionListener(e -> cardLayout.show(contentPanel, "DAILY_TASKS"));
-        vehicleButton.addActionListener(e -> cardLayout.show(contentPanel, "VEHICLE"));
-        managementButton.addActionListener(e -> cardLayout.show(contentPanel, "MANAGEMENT"));
-        statsButton.addActionListener(e -> cardLayout.show(contentPanel, "STATS"));
-
+        createTicketButton.addActionListener(e -> cardLayout.show(contentPanel, "DAILY_TASKS"));
+        ticketManagementButton.addActionListener(e -> cardLayout.show(contentPanel, "STATS"));
+        vehicleManagementButton.addActionListener(e -> cardLayout.show(contentPanel, "VEHICLE"));
+        spotManagementButton.addActionListener(e -> cardLayout.show(contentPanel, "MANAGEMENT"));
         logoutButton.addActionListener(e -> saveAndExit());
 
-        navPanel.add(dailyTasksButton);
-        navPanel.add(statsButton);
+        navPanel.add(createTicketButton);
+        navPanel.add(ticketManagementButton);
         navPanel.add(new JSeparator());
-        navPanel.add(vehicleButton);
-        navPanel.add(managementButton);
+        navPanel.add(vehicleManagementButton);
+        navPanel.add(spotManagementButton);
         navPanel.add(new JSeparator());
         navPanel.add(logoutButton);
     }

@@ -2,16 +2,19 @@ package logic;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.io.IOException;
 
 public class ParkingLot {
+    private DataManager dataManager;
     private ArrayList<Vehicle> vehicles;
     private ArrayList<ParkingSpot> spots;
     private ArrayList<Ticket> tickets;
 
-    public ParkingLot() {
-        this.vehicles = new ArrayList<>();
-        this.spots = new ArrayList<>();
-        this.tickets = new ArrayList<>();
+    public ParkingLot() throws IOException {
+        this.dataManager = new DataManager();
+        this.vehicles = dataManager.loadVehicles();
+        this.spots = dataManager.loadSpots();
+        this.tickets = dataManager.loadTickets();
     }
 
     /*
@@ -363,4 +366,8 @@ public class ParkingLot {
         spots.clear();
     }
 
+    // Lưu dữ liệu
+    public void saveData() throws IOException {
+        dataManager.saveData(vehicles, spots, tickets);
+    }
 }

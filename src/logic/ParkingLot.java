@@ -181,7 +181,26 @@ public class ParkingLot {
         return null;
     }
 
-    // Thêm/Xóa vị trí
+    // Thêm vị trí
+    public boolean addSpot(VehicleType allowedType) {
+        if (allowedType == null)
+            return false;
+
+        // Tự động tìm ID lớn nhất để tăng dần
+        int maxId = 0;
+        for (ParkingSpot s : spots) {
+            if (s.getSpotID() > maxId) {
+                maxId = s.getSpotID();
+            }
+        }
+        int newId = maxId + 1;
+
+        // Thêm spot mới: ID tự tăng, plate null, occupied false
+        spots.add(new ParkingSpot(newId, allowedType, null, false));
+        return true;
+    }
+
+    // Thêm vị trí (Full tham số - Dùng khi load dữ liệu từ file)
     public boolean addSpot(int spotID, VehicleType allowedType, String licensePlate, boolean occupied) {
         if (allowedType == null)
             return false;

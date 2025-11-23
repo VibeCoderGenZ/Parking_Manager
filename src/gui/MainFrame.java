@@ -65,15 +65,28 @@ public class MainFrame extends JFrame {
         contentPanel.add(placeholder, "PLACEHOLDER");
 
         // -- Setup các panel chức năng --
+
+        // Chức năng 4: Quản lý xe (Tạo trước để truyền callback vào CreateTicketPanel)
+        VehicleManagementPanel vehiclePanel = new VehicleManagementPanel(parkingLot);
+        contentPanel.add(vehiclePanel, "FUNCTION_4");
+
         // Chức năng 1: Tạo vé / Thu vé (Dùng Tab để chứa 2 panel con)
         JTabbedPane ticketTabPane = new JTabbedPane();
-        ticketTabPane.addTab("Tạo Vé", new CreateTicketPanel(parkingLot));
+        ticketTabPane.addTab("Tạo Vé", new CreateTicketPanel(parkingLot, () -> {
+            // Callback khi người dùng muốn thêm xe mới từ màn hình tạo vé
+            vehiclePanel.loadData();
+            cardLayout.show(contentPanel, "FUNCTION_4");
+        }));
         ticketTabPane.addTab("Thu Vé", new CollectTicketPanel(parkingLot));
         contentPanel.add(ticketTabPane, "FUNCTION_1");
 
         // Chức năng 2: Quản lý vé
         TicketManagementPanel ticketPanel = new TicketManagementPanel(parkingLot);
         contentPanel.add(ticketPanel, "FUNCTION_2");
+
+        // Chức năng 5: Quản lý bãi xe (Vị trí đỗ)
+        SpotManagementPanel spotPanel = new SpotManagementPanel(parkingLot);
+        contentPanel.add(spotPanel, "FUNCTION_5");
 
         // Tạo 7 nút chức năng (Tạm để tên placeholder)
         for (int i = 1; i <= 7; i++) {
@@ -86,6 +99,10 @@ public class MainFrame extends JFrame {
                     btnText = "Tạo Vé / Thu vé";
                 } else if (i == 2) {
                     btnText = "Quản Lý Vé";
+                } else if (i == 4) {
+                    btnText = "Quản Lý Xe";
+                } else if (i == 5) {
+                    btnText = "Quản Lý Bãi Xe";
                 }
                 JButton btn = new JButton(btnText);
 
@@ -95,8 +112,14 @@ public class MainFrame extends JFrame {
                     if (funcIndex == 1) {
                         cardLayout.show(contentPanel, "FUNCTION_1");
                     } else if (funcIndex == 2) {
-                        ticketPanel.refresh(); // Cập nhật dữ liệu mới nhất
+                        ticketPanel.refresh();
                         cardLayout.show(contentPanel, "FUNCTION_2");
+                    } else if (funcIndex == 4) {
+                        vehiclePanel.loadData();
+                        cardLayout.show(contentPanel, "FUNCTION_4");
+                    } else if (funcIndex == 5) {
+                        spotPanel.loadData(); // Refresh dữ liệu
+                        cardLayout.show(contentPanel, "FUNCTION_5");
                     } else {
                         // Các chức năng khác chưa có thì hiện placeholder
                         cardLayout.show(contentPanel, "PLACEHOLDER");

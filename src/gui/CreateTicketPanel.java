@@ -13,9 +13,11 @@ public class CreateTicketPanel extends JPanel {
     private ParkingLot parkingLot;
     private JTextField txtLicensePlate;
     private JButton btnPark;
+    private Runnable onAddNewVehicle;
 
-    public CreateTicketPanel(ParkingLot parkingLot) {
+    public CreateTicketPanel(ParkingLot parkingLot, Runnable onAddNewVehicle) {
         this.parkingLot = parkingLot;
+        this.onAddNewVehicle = onAddNewVehicle;
         setLayout(new GridBagLayout()); // Dùng GridBagLayout để căn giữa mọi thứ
 
         initComponents();
@@ -81,8 +83,9 @@ public class CreateTicketPanel extends JPanel {
                     JOptionPane.ERROR_MESSAGE);
 
             if (choice == JOptionPane.YES_OPTION) {
-                // TODO: Mở dialog thêm xe (Sẽ làm sau)
-                JOptionPane.showMessageDialog(this, "Chức năng thêm nhanh xe sẽ được cập nhật sau!");
+                if (onAddNewVehicle != null) {
+                    onAddNewVehicle.run();
+                }
             }
             return;
         }

@@ -1,9 +1,10 @@
 ## Vscode
+.vscode
 bin
 data
 src/test
 
 ## IntelliJ
-out/
 .idea/
 *.iml
+out/

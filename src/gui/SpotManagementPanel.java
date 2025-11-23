@@ -167,7 +167,7 @@ public class SpotManagementPanel extends JPanel {
     private void showResetConfirmation() {
         int confirm = JOptionPane.showConfirmDialog(this,
                 "CẢNH BÁO NGUY HIỂM:\n" +
-                        "Hành động này sẽ xóa TOÀN BỘ vị trí đỗ và TOÀN BỘ vé xe hiện có.\n" +
+                        "Hành động này sẽ xóa TOÀN BỘ  \"Vị Trí Đỗ\"  và TOÀN BỘ  \"Vé\"  hiện có.\n" +
                         "Dữ liệu sẽ không thể phục hồi.\n\n" +
                         "Bạn có chắc chắn muốn tiếp tục?",
                 "Xác nhận Reset Hệ Thống",

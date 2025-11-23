@@ -51,7 +51,7 @@ public class MainFrame extends JFrame {
         navPanel = new JPanel();
         // Grid layout 7 hàng, 1 cột để chứa 7 nút chức năng
         navPanel.setLayout(new GridLayout(7, 1, 10, 10));
-        navPanel.setPreferredSize(new Dimension(200, 0)); // Chiều rộng 200px
+        navPanel.setPreferredSize(new Dimension(150, 0)); // Chiều rộng 150px
         navPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Padding xung quanh
 
         // --- 2. Content Panel (Ở giữa) ---
@@ -71,6 +71,10 @@ public class MainFrame extends JFrame {
         ticketTabPane.addTab("Thu Vé", new CollectTicketPanel(parkingLot));
         contentPanel.add(ticketTabPane, "FUNCTION_1");
 
+        // Chức năng 2: Quản lý vé
+        TicketManagementPanel ticketPanel = new TicketManagementPanel(parkingLot);
+        contentPanel.add(ticketPanel, "FUNCTION_2");
+
         // Tạo 7 nút chức năng (Tạm để tên placeholder)
         for (int i = 1; i <= 7; i++) {
             if (i == 3 || i == 6) {
@@ -80,6 +84,8 @@ public class MainFrame extends JFrame {
                 String btnText = "Chức năng " + i;
                 if (i == 1) {
                     btnText = "Tạo Vé / Thu vé";
+                } else if (i == 2) {
+                    btnText = "Quản Lý Vé";
                 }
                 JButton btn = new JButton(btnText);
 
@@ -88,6 +94,9 @@ public class MainFrame extends JFrame {
                 btn.addActionListener(e -> {
                     if (funcIndex == 1) {
                         cardLayout.show(contentPanel, "FUNCTION_1");
+                    } else if (funcIndex == 2) {
+                        ticketPanel.refresh(); // Cập nhật dữ liệu mới nhất
+                        cardLayout.show(contentPanel, "FUNCTION_2");
                     } else {
                         // Các chức năng khác chưa có thì hiện placeholder
                         cardLayout.show(contentPanel, "PLACEHOLDER");

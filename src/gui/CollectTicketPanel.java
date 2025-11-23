@@ -95,18 +95,8 @@ public class CollectTicketPanel extends JPanel {
         Ticket ticket = null;
 
         // --- BƯỚC 1: TÌM VÉ ---
-        if (rbByPlate.isSelected()) {
-            // Tìm theo biển số
-            ticket = parkingLot.getTicketByLicensePlate(input);
-            if (ticket == null || ticket.getExitTime() != null) {
-                JOptionPane.showMessageDialog(this,
-                        "Không tìm thấy vé hoạt động cho xe biển số: " + input,
-                        "Không tìm thấy",
-                        JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-        } else {
-            // Tìm theo mã vé
+        if (rbByTicketId.isSelected()) {
+            // Tìm theo mã vé (Ưu tiên vì là mặc định)
             try {
                 int ticketId = Integer.parseInt(input);
                 ticket = parkingLot.getTicketByTicketID(ticketId);
@@ -125,6 +115,16 @@ public class CollectTicketPanel extends JPanel {
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
+        } else {
+            // Tìm theo biển số
+            ticket = parkingLot.getTicketByLicensePlate(input);
+            if (ticket == null || ticket.getExitTime() != null) {
+                JOptionPane.showMessageDialog(this,
+                        "Không tìm thấy vé hoạt động cho xe biển số: " + input,
+                        "Không tìm thấy",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
         }
 
         // --- BƯỚC 2: LẤY THÔNG TIN XE ---
@@ -133,7 +133,6 @@ public class CollectTicketPanel extends JPanel {
 
         // --- BƯỚC 3: XÁC NHẬN ---
         String ownerInfo = (v != null) ? v.getOwnerName() : "Không rõ";
-
         int confirm = JOptionPane.showConfirmDialog(this,
                 "Xác nhận trả xe?\n\n" +
                         "Mã vé: " + ticket.getTicketID() + "\n" +

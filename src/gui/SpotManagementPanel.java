@@ -15,6 +15,7 @@ public class SpotManagementPanel extends JPanel {
     private JTable table;
     private DefaultTableModel tableModel;
     private JComboBox<Object> cbFilterType; // Object để chứa cả String "Tất cả" và Enum
+    private JComboBox<String> cbFilterStatus; // Lọc theo trạng thái
     private JButton btnAddSpots;
     private JButton btnResetAll;
 
@@ -29,9 +30,9 @@ public class SpotManagementPanel extends JPanel {
     private void initComponents() {
         // 1. Top Panel (Filter)
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        topPanel.add(new JLabel("Lọc theo loại xe:"));
 
-        // Tạo model cho combobox: Thêm "Tất cả" vào đầu
+        // Filter Type
+        topPanel.add(new JLabel("Lọc theo loại xe:"));
         DefaultComboBoxModel<Object> cbModel = new DefaultComboBoxModel<>();
         cbModel.addElement("Tất cả");
         for (VehicleType type : VehicleType.values()) {
@@ -40,6 +41,13 @@ public class SpotManagementPanel extends JPanel {
         cbFilterType = new JComboBox<>(cbModel);
         cbFilterType.addActionListener(e -> loadData());
         topPanel.add(cbFilterType);
+
+        // Filter Status
+        topPanel.add(new JLabel("   Lọc theo trạng thái:"));
+        String[] statuses = { "Tất cả", "Trống", "Đang có xe" };
+        cbFilterStatus = new JComboBox<>(statuses);
+        cbFilterStatus.addActionListener(e -> loadData());
+        topPanel.add(cbFilterStatus);
 
         add(topPanel, BorderLayout.NORTH);
 
@@ -87,13 +95,22 @@ public class SpotManagementPanel extends JPanel {
 
     public void loadData() {
         tableModel.setRowCount(0);
-        Object selectedItem = cbFilterType.getSelectedItem();
+        Object selectedType = cbFilterType.getSelectedItem();
+        String selectedStatus = (String) cbFilterStatus.getSelectedItem();
 
         ArrayList<ParkingSpot> allSpots = parkingLot.getSpots();
 
         for (ParkingSpot spot : allSpots) {
-            // Filter logic
-            if (!"Tất cả".equals(selectedItem) && spot.getAllowedType() != selectedItem) {
+            // Filter by Type
+            if (!"Tất cả".equals(selectedType) && spot.getAllowedType() != selectedType) {
+                continue;
+            }
+
+            // Filter by Status
+            if ("Trống".equals(selectedStatus) && spot.isOccupied()) {
+                continue;
+            }
+            if ("Đang có xe".equals(selectedStatus) && !spot.isOccupied()) {
                 continue;
             }
 

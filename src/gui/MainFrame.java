@@ -88,6 +88,10 @@ public class MainFrame extends JFrame {
         SpotManagementPanel spotPanel = new SpotManagementPanel(parkingLot);
         contentPanel.add(spotPanel, "FUNCTION_5");
 
+        // Chức năng 7: Tìm kiếm
+        SearchPanel searchPanel = new SearchPanel(parkingLot);
+        contentPanel.add(searchPanel, "FUNCTION_7");
+
         // Tạo 7 nút chức năng (Tạm để tên placeholder)
         for (int i = 1; i <= 7; i++) {
             if (i == 3 || i == 6) {
@@ -103,6 +107,8 @@ public class MainFrame extends JFrame {
                     btnText = "Quản Lý Xe";
                 } else if (i == 5) {
                     btnText = "Quản Lý Bãi Xe";
+                } else if (i == 7) {
+                    btnText = "Tìm Kiếm";
                 }
                 JButton btn = new JButton(btnText);
 
@@ -118,8 +124,10 @@ public class MainFrame extends JFrame {
                         vehiclePanel.loadData();
                         cardLayout.show(contentPanel, "FUNCTION_4");
                     } else if (funcIndex == 5) {
-                        spotPanel.loadData(); // Refresh dữ liệu
+                        spotPanel.loadData();
                         cardLayout.show(contentPanel, "FUNCTION_5");
+                    } else if (funcIndex == 7) {
+                        cardLayout.show(contentPanel, "FUNCTION_7");
                     } else {
                         // Các chức năng khác chưa có thì hiện placeholder
                         cardLayout.show(contentPanel, "PLACEHOLDER");

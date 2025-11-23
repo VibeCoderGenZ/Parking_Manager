@@ -379,12 +379,7 @@ public class ParkingLot {
         spots.clear();
     }
 
-    // Lưu dữ liệu
-    public void saveData() throws IOException {
-        dataManager.saveData(vehicles, spots, tickets);
-    }
-
-    // Hàm lưu tất cả dữ liệu lại (Dùng khi tắt app)
+    // Lưu tất cả dữ liệu lại (Dùng khi tắt app)
     public void saveAllData() throws IOException {
         dataManager.saveData(vehicles, spots, tickets);
     }

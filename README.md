@@ -1,3 +1,3 @@
 ## Project Quản Lý Bãi Gửi Xe
 
-### Chi tiết thiết kế: `doc/`
+### Chi tiết tài liệu thiết kế: `doc/`

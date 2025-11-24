@@ -46,9 +46,9 @@ public class DataManager {
                     continue;
                 String[] parts = line.split(",");
                 if (parts.length >= 4) {
-                    // SỬA: Thêm .trim() vào tất cả các phần để xóa khoảng trắng thừa
+                    // Thêm .trim() vào tất cả các phần để xóa khoảng trắng thừa
                     String plate = parts[0].trim();
-                    VehicleType type = VehicleType.valueOf(parts[1].trim()); // Lỗi cũ nằm ở đây
+                    VehicleType type = VehicleType.valueOf(parts[1].trim());
                     String owner = parts[2].trim();
                     String phone = parts[3].trim();
 

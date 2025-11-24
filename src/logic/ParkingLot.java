@@ -200,33 +200,6 @@ public class ParkingLot {
         return true;
     }
 
-    // Thêm vị trí (Full tham số - Dùng khi load dữ liệu từ file)
-    public boolean addSpot(int spotID, VehicleType allowedType, String licensePlate, boolean occupied) {
-        if (allowedType == null)
-            return false;
-        if (getSpotBySpotID(spotID) != null)
-            return false;
-        String plate = (licensePlate == null) ? null : licensePlate.trim();
-        if (occupied) {
-            if (plate == null || plate.isEmpty())
-                return false;
-            // Kiểm tra xe có tồn tại không
-            Vehicle v = getVehicleByLicensePlate(plate);
-            if (v == null)
-                return false;
-            // Kiểm tra loại xe có khớp không
-            if (v.getType() != allowedType)
-                return false;
-            // Kiểm tra không trùng biển số với spot khác
-            if (getSpotByLicensePlate(plate) != null)
-                return false;
-        } else {
-            plate = null;
-        }
-        spots.add(new ParkingSpot(spotID, allowedType, plate, occupied));
-        return true;
-    }
-
     /*
      * **************************************************************************
      * *

@@ -63,7 +63,7 @@ public class MainFrame extends JFrame {
      */
     private void initFrameSettings() {
         setTitle("Parking Manager - Hệ Thống Quản Lý Bãi Đỗ Xe");
-        setSize(1000, 700); // Kích thước mặc định lớn hơn chút cho thoải mái
+        setSize(1280, 720); // Kích thước mặc định lớn hơn chút cho thoải mái
         setLocationRelativeTo(null); // Căn giữa màn hình
         setLayout(new BorderLayout());
 
@@ -157,8 +157,8 @@ public class MainFrame extends JFrame {
         // Tab 2: Thu vé
         CollectTicketPanel collectTicketPanel = new CollectTicketPanel(parkingLot);
 
-        ticketTabPane.addTab("Tạo Vé (Vào Bến)", createTicketPanel);
-        ticketTabPane.addTab("Thu Vé (Xuất Bến)", collectTicketPanel);
+        ticketTabPane.addTab("Tạo Vé (Vào Bãi)", createTicketPanel);
+        ticketTabPane.addTab("Thu Vé (Xuất Bãi)", collectTicketPanel);
         contentPanel.add(ticketTabPane, "FUNCTION_1");
 
         // Màn hình 2: Quản lý vé

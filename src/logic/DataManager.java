@@ -22,7 +22,7 @@ public class DataManager {
         saveList(TICKET_FILE, tickets);
     }
 
-    // Hàm dùng chung (Generic) để ghi danh sách bất kỳ
+    // Hàm dùng chung để ghi danh sách bất kỳ
     private <T> void saveList(String filename, ArrayList<T> list) throws IOException {
         BufferedWriter bw = new BufferedWriter(new FileWriter(filename));
         for (T item : list) {

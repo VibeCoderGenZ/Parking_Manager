@@ -2,7 +2,6 @@
 .vscode
 bin
 data
-src/test
 
 ## IntelliJ
 .idea

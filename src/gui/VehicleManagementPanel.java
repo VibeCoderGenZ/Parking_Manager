@@ -9,49 +9,65 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * Panel quản lý danh sách xe (Đăng ký xe).
+ * Chức năng: Xem danh sách, Thêm xe mới, Xóa xe, Xóa tất cả.
+ */
 public class VehicleManagementPanel extends JPanel {
 
+    // --- Fields: Logic ---
     private ParkingLot parkingLot;
+
+    // --- Fields: UI Components ---
     private JTable table;
     private DefaultTableModel tableModel;
     private JButton btnAdd;
     private JButton btnRemove;
     private JButton btnRemoveAll;
 
+    // --- Constructor ---
     public VehicleManagementPanel(ParkingLot parkingLot) {
         this.parkingLot = parkingLot;
-        setLayout(new BorderLayout());
 
+        setLayout(new BorderLayout());
         initComponents();
         loadData();
     }
 
+    // --- Initialization Methods ---
+
     private void initComponents() {
-        // 1. Table (Center)
+        // 1. Khởi tạo bảng dữ liệu (Center)
+        initTable();
+
+        // 2. Khởi tạo panel điều khiển (Bottom)
+        initControlPanel();
+    }
+
+    private void initTable() {
         String[] columnNames = { "Biển Số", "Loại Xe", "Chủ Xe", "Số Điện Thoại" };
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false;
+                return false; // Không cho sửa trực tiếp trên bảng
             }
         };
+
         table = new JTable(tableModel);
         table.setRowHeight(25);
         table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         JScrollPane scrollPane = new JScrollPane(table);
         add(scrollPane, BorderLayout.CENTER);
+    }
 
-        // 2. Buttons (Bottom)
+    private void initControlPanel() {
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
 
-        btnAdd = new JButton("Thêm Xe");
-        btnRemove = new JButton("Xóa Xe");
-        btnRemoveAll = new JButton("Xóa Tất Cả");
-
-        styleButton(btnAdd, new Color(0, 102, 204)); // Xanh dương
-        styleButton(btnRemove, new Color(204, 0, 0)); // Đỏ
-        styleButton(btnRemoveAll, new Color(153, 0, 0)); // Đỏ đậm
+        btnAdd = createStyledButton("Thêm Xe", new Color(0, 102, 204));
+        btnRemove = createStyledButton("Xóa Xe", new Color(204, 0, 0));
+        btnRemoveAll = createStyledButton("Xóa Tất Cả", new Color(153, 0, 0));
 
         bottomPanel.add(btnAdd);
         bottomPanel.add(btnRemove);
@@ -59,21 +75,27 @@ public class VehicleManagementPanel extends JPanel {
 
         add(bottomPanel, BorderLayout.SOUTH);
 
-        // 3. Events
+        // Gắn sự kiện
         btnAdd.addActionListener(e -> showAddVehicleDialog());
         btnRemove.addActionListener(e -> showRemoveVehicleDialog());
         btnRemoveAll.addActionListener(e -> showRemoveAllConfirmation());
     }
 
-    private void styleButton(JButton btn, Color bg) {
+    private JButton createStyledButton(String text, Color bg) {
+        JButton btn = new JButton(text);
         btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btn.setBackground(bg);
         btn.setForeground(Color.WHITE);
         btn.setFocusPainted(false);
         btn.setPreferredSize(new Dimension(150, 35));
+        return btn;
     }
 
-    // Hàm public để refresh dữ liệu
+    // --- Business Logic ---
+
+    /**
+     * Tải lại dữ liệu từ logic lên bảng.
+     */
     public void loadData() {
         tableModel.setRowCount(0);
         ArrayList<Vehicle> list = parkingLot.getVehicles();
@@ -88,8 +110,10 @@ public class VehicleManagementPanel extends JPanel {
         }
     }
 
+    /**
+     * Hiển thị Dialog thêm xe mới.
+     */
     private void showAddVehicleDialog() {
-        // Tạo Dialog nhập liệu
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Thêm Xe Mới", true);
         dialog.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -101,63 +125,20 @@ public class VehicleManagementPanel extends JPanel {
         JTextField txtOwner = new JTextField(15);
         JTextField txtPhone = new JTextField(15);
 
-        // Row 0: Plate
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        dialog.add(new JLabel("Biển số:"), gbc);
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        dialog.add(txtPlate, gbc);
+        // Helper để thêm row vào dialog
+        addFormRow(dialog, gbc, 0, "Biển số:", txtPlate);
+        addFormRow(dialog, gbc, 1, "Loại xe:", cbType);
+        addFormRow(dialog, gbc, 2, "Chủ xe:", txtOwner);
+        addFormRow(dialog, gbc, 3, "SĐT:", txtPhone);
 
-        // Row 1: Type
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        dialog.add(new JLabel("Loại xe:"), gbc);
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        dialog.add(cbType, gbc);
-
-        // Row 2: Owner
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        dialog.add(new JLabel("Chủ xe:"), gbc);
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        dialog.add(txtOwner, gbc);
-
-        // Row 3: Phone
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        dialog.add(new JLabel("SĐT:"), gbc);
-        gbc.gridx = 1;
-        gbc.gridy = 3;
-        dialog.add(txtPhone, gbc);
-
-        // Row 4: Button Confirm
+        // Nút xác nhận
         JButton btnConfirm = new JButton("Thêm");
         btnConfirm.setBackground(new Color(0, 102, 204));
         btnConfirm.setForeground(Color.WHITE);
 
         btnConfirm.addActionListener(e -> {
-            String plate = txtPlate.getText().trim();
-            VehicleType type = (VehicleType) cbType.getSelectedItem();
-            String owner = txtOwner.getText().trim();
-            String phone = txtPhone.getText().trim();
-
-            if (plate.isEmpty() || owner.isEmpty() || phone.isEmpty()) {
-                JOptionPane.showMessageDialog(dialog, "Vui lòng điền đầy đủ thông tin!", "Lỗi",
-                        JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-
-            boolean success = parkingLot.addVehicle(plate, type, owner, phone);
-            if (success) {
-                JOptionPane.showMessageDialog(dialog, "Thêm xe thành công!");
-                loadData(); // Refresh bảng
+            if (processAddVehicle(txtPlate, cbType, txtOwner, txtPhone)) {
                 dialog.dispose();
-            } else {
-                JOptionPane.showMessageDialog(dialog, "Thêm thất bại!\n(Có thể biển số đã tồn tại)", "Lỗi",
-                        JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -171,8 +152,61 @@ public class VehicleManagementPanel extends JPanel {
         dialog.setVisible(true);
     }
 
+    private void addFormRow(JDialog dialog, GridBagConstraints gbc, int row, String label, JComponent comp) {
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.gridwidth = 1;
+        dialog.add(new JLabel(label), gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = row;
+        dialog.add(comp, gbc);
+    }
+
+    private boolean processAddVehicle(JTextField txtPlate, JComboBox<VehicleType> cbType, JTextField txtOwner,
+            JTextField txtPhone) {
+        String plate = txtPlate.getText().trim();
+        VehicleType type = (VehicleType) cbType.getSelectedItem();
+        String owner = txtOwner.getText().trim();
+        String phone = txtPhone.getText().trim();
+
+        if (plate.isEmpty() || owner.isEmpty() || phone.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin!", "Lỗi", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+
+        boolean success = parkingLot.addVehicle(plate, type, owner, phone);
+        if (success) {
+            JOptionPane.showMessageDialog(this, "Thêm xe thành công!");
+            loadData();
+            return true;
+        } else {
+            JOptionPane.showMessageDialog(this, "Thêm thất bại!\n(Có thể biển số đã tồn tại)", "Lỗi",
+                    JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+    }
+
+    /**
+     * Hiển thị Dialog xóa xe.
+     */
     private void showRemoveVehicleDialog() {
-        String plate = JOptionPane.showInputDialog(this, "Nhập biển số xe cần xóa:");
+        // Nếu có dòng đang chọn thì lấy biển số đó luôn
+        String initialValue = "";
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow != -1) {
+            initialValue = (String) tableModel.getValueAt(selectedRow, 0);
+        }
+
+        String plate = (String) JOptionPane.showInputDialog(
+                this,
+                "Nhập biển số xe cần xóa:",
+                "Xóa Xe",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                null,
+                initialValue);
+
         if (plate != null && !plate.trim().isEmpty()) {
             boolean success = parkingLot.removeVehicle(plate.trim());
             if (success) {
@@ -185,6 +219,9 @@ public class VehicleManagementPanel extends JPanel {
         }
     }
 
+    /**
+     * Hiển thị xác nhận xóa tất cả.
+     */
     private void showRemoveAllConfirmation() {
         int confirm = JOptionPane.showConfirmDialog(this,
                 "CẢNH BÁO: Bạn có chắc chắn muốn xóa TOÀN BỘ dữ liệu xe?\nHành động này không thể hoàn tác!",

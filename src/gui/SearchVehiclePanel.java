@@ -6,22 +6,48 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+/**
+ * Panel tìm kiếm xe.
+ * Chức năng: Tìm xe theo Biển số hoặc Tên chủ xe.
+ */
 public class SearchVehiclePanel extends JPanel {
+
+    // --- Fields: Logic ---
     private ParkingLot parkingLot;
+
+    // --- Fields: UI Components ---
     private JComboBox<String> searchTypeCombo;
     private JTextField searchField;
     private JTable resultTable;
     private DefaultTableModel tableModel;
+    private JButton searchButton;
 
+    // --- Constructor ---
     public SearchVehiclePanel(ParkingLot parkingLot) {
         this.parkingLot = parkingLot;
+
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // --- Top Panel: Search Controls ---
+        initComponents();
+    }
+
+    // --- Initialization Methods ---
+
+    private void initComponents() {
+        // 1. Top Panel: Search Controls
+        initSearchControls();
+
+        // 2. Center Panel: Results Table
+        initResultTable();
+
+        // 3. Event Handling
+        initEvents();
+    }
+
+    private void initSearchControls() {
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
         topPanel.add(new JLabel("Tìm kiếm theo:"));
@@ -33,12 +59,13 @@ public class SearchVehiclePanel extends JPanel {
         searchField = new JTextField(20);
         topPanel.add(searchField);
 
-        JButton searchButton = new JButton("Tìm kiếm");
+        searchButton = new JButton("Tìm kiếm");
         topPanel.add(searchButton);
 
         add(topPanel, BorderLayout.NORTH);
+    }
 
-        // --- Center Panel: Results Table ---
+    private void initResultTable() {
         String[] columnNames = { "Biển Số", "Loại Xe", "Chủ Xe", "Số Điện Thoại" };
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
@@ -47,26 +74,21 @@ public class SearchVehiclePanel extends JPanel {
             }
         };
         resultTable = new JTable(tableModel);
+        resultTable.setRowHeight(25);
+        resultTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
+
         JScrollPane scrollPane = new JScrollPane(resultTable);
         add(scrollPane, BorderLayout.CENTER);
-
-        // --- Event Handling ---
-        searchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                performSearch();
-            }
-        });
-
-        searchField.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                performSearch();
-            }
-        });
     }
 
-    private void performSearch() {
+    private void initEvents() {
+        searchButton.addActionListener(this::handleSearchAction);
+        searchField.addActionListener(this::handleSearchAction);
+    }
+
+    // --- Business Logic ---
+
+    private void handleSearchAction(ActionEvent e) {
         String keyword = searchField.getText().trim();
         if (keyword.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập từ khóa tìm kiếm!", "Thông báo",
@@ -79,14 +101,26 @@ public class SearchVehiclePanel extends JPanel {
         ArrayList<Vehicle> results = new ArrayList<>();
 
         if ("Biển Số Xe".equals(searchType)) {
-            Vehicle v = parkingLot.getVehicleByLicensePlate(keyword);
-            if (v != null) {
-                results.add(v);
-            }
+            searchByLicensePlate(keyword, results);
         } else if ("Tên Chủ Xe".equals(searchType)) {
-            results = parkingLot.getVehicleByOwnerName(keyword);
+            searchByOwnerName(keyword, results);
         }
 
+        displayResults(results);
+    }
+
+    private void searchByLicensePlate(String keyword, ArrayList<Vehicle> results) {
+        Vehicle v = parkingLot.getVehicleByLicensePlate(keyword);
+        if (v != null) {
+            results.add(v);
+        }
+    }
+
+    private void searchByOwnerName(String keyword, ArrayList<Vehicle> results) {
+        results.addAll(parkingLot.getVehicleByOwnerName(keyword));
+    }
+
+    private void displayResults(ArrayList<Vehicle> results) {
         if (results.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả nào!", "Thông báo",
                     JOptionPane.INFORMATION_MESSAGE);

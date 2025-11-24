@@ -2,28 +2,39 @@ package gui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import logic.ParkingLot;
 import logic.Ticket;
 import logic.Vehicle;
 
-import java.awt.event.ActionEvent;
-import java.time.format.DateTimeFormatter;
-
+/**
+ * Panel thu vé (Chức năng ra bến).
+ * Chức năng: Tìm vé (theo mã hoặc biển số) -> Xác nhận -> Thu vé/Trả xe.
+ */
 public class CollectTicketPanel extends JPanel {
 
+    // --- Fields: Logic ---
     private ParkingLot parkingLot;
-    private JRadioButton rbByPlate;
+
+    // --- Fields: UI Components ---
     private JRadioButton rbByTicketId;
+    private JRadioButton rbByPlate;
+    private JLabel lblInstruction;
     private JTextField txtInput;
     private JButton btnCollect;
 
+    // --- Constructor ---
     public CollectTicketPanel(ParkingLot parkingLot) {
         this.parkingLot = parkingLot;
-        setLayout(new GridBagLayout());
 
+        setLayout(new GridBagLayout());
         initComponents();
     }
+
+    // --- Initialization Methods ---
 
     private void initComponents() {
         GridBagConstraints gbc = new GridBagConstraints();
@@ -31,22 +42,13 @@ public class CollectTicketPanel extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // 1. Panel lựa chọn chế độ tìm kiếm
-        JPanel pnlMode = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        rbByTicketId = new JRadioButton("Theo Mã Vé", true);
-        rbByPlate = new JRadioButton("Theo Biển Số");
-
-        ButtonGroup group = new ButtonGroup();
-        group.add(rbByTicketId);
-        group.add(rbByPlate);
-
-        pnlMode.add(rbByTicketId);
-        pnlMode.add(rbByPlate);
+        JPanel pnlMode = createModeSelectionPanel();
         gbc.gridx = 0;
         gbc.gridy = 0;
         add(pnlMode, gbc);
 
         // 2. Label hướng dẫn
-        JLabel lblInstruction = new JLabel("Nhập mã vé:");
+        lblInstruction = new JLabel("Nhập mã vé:");
         lblInstruction.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblInstruction.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -75,7 +77,25 @@ public class CollectTicketPanel extends JPanel {
         gbc.gridy = 3;
         add(btnCollect, gbc);
 
-        // Events
+        // Gắn sự kiện
+        initEvents();
+    }
+
+    private JPanel createModeSelectionPanel() {
+        JPanel pnlMode = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        rbByTicketId = new JRadioButton("Theo Mã Vé", true);
+        rbByPlate = new JRadioButton("Theo Biển Số");
+
+        ButtonGroup group = new ButtonGroup();
+        group.add(rbByTicketId);
+        group.add(rbByPlate);
+
+        pnlMode.add(rbByTicketId);
+        pnlMode.add(rbByPlate);
+        return pnlMode;
+    }
+
+    private void initEvents() {
         btnCollect.addActionListener(this::handleCollectAction);
         txtInput.addActionListener(this::handleCollectAction);
 
@@ -84,6 +104,11 @@ public class CollectTicketPanel extends JPanel {
         rbByTicketId.addActionListener(e -> lblInstruction.setText("Nhập mã vé:"));
     }
 
+    // --- Business Logic ---
+
+    /**
+     * Xử lý logic khi nhấn nút Thu vé.
+     */
     private void handleCollectAction(ActionEvent e) {
         String input = txtInput.getText().trim();
 
@@ -92,67 +117,88 @@ public class CollectTicketPanel extends JPanel {
             return;
         }
 
-        Ticket ticket = null;
+        Ticket ticket = findTicket(input);
+        if (ticket == null)
+            return; // Đã xử lý thông báo lỗi trong findTicket
 
-        // --- BƯỚC 1: TÌM VÉ ---
+        confirmAndProcessReturn(ticket);
+    }
+
+    /**
+     * Tìm vé dựa trên input và chế độ đã chọn.
+     */
+    private Ticket findTicket(String input) {
         if (rbByTicketId.isSelected()) {
-            // Tìm theo mã vé (Ưu tiên vì là mặc định)
-            try {
-                int ticketId = Integer.parseInt(input);
-                ticket = parkingLot.getTicketByTicketID(ticketId);
-                if (ticket == null) {
-                    JOptionPane.showMessageDialog(this, "Không tìm thấy vé có mã: " + ticketId, "Lỗi",
-                            JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                if (ticket.getExitTime() != null) {
-                    JOptionPane.showMessageDialog(this, "Vé này đã được sử dụng (Xe đã ra).", "Lỗi",
-                            JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Mã vé phải là số nguyên!", "Lỗi định dạng",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+            return findTicketById(input);
         } else {
-            // Tìm theo biển số
-            ticket = parkingLot.getTicketByLicensePlate(input);
-            if (ticket == null || ticket.getExitTime() != null) {
-                JOptionPane.showMessageDialog(this,
-                        "Không tìm thấy vé hoạt động cho xe biển số: " + input,
-                        "Không tìm thấy",
-                        JOptionPane.WARNING_MESSAGE);
-                return;
-            }
+            return findTicketByPlate(input);
         }
+    }
 
-        // --- BƯỚC 2: LẤY THÔNG TIN XE ---
+    private Ticket findTicketById(String input) {
+        try {
+            int ticketId = Integer.parseInt(input);
+            Ticket ticket = parkingLot.getTicketByTicketID(ticketId);
+
+            if (ticket == null) {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy vé có mã: " + ticketId, "Lỗi",
+                        JOptionPane.ERROR_MESSAGE);
+                return null;
+            }
+            if (ticket.getExitTime() != null) {
+                JOptionPane.showMessageDialog(this, "Vé này đã được sử dụng (Xe đã ra).", "Lỗi",
+                        JOptionPane.WARNING_MESSAGE);
+                return null;
+            }
+            return ticket;
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Mã vé phải là số nguyên!", "Lỗi định dạng", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+    }
+
+    private Ticket findTicketByPlate(String input) {
+        Ticket ticket = parkingLot.getTicketByLicensePlate(input);
+        if (ticket == null || ticket.getExitTime() != null) {
+            JOptionPane.showMessageDialog(this,
+                    "Không tìm thấy vé hoạt động cho xe biển số: " + input,
+                    "Không tìm thấy",
+                    JOptionPane.WARNING_MESSAGE);
+            return null;
+        }
+        return ticket;
+    }
+
+    /**
+     * Hiển thị hộp thoại xác nhận và thực hiện trả xe.
+     */
+    private void confirmAndProcessReturn(Ticket ticket) {
         String plate = ticket.getLicensePlate();
         Vehicle v = parkingLot.getVehicleByLicensePlate(plate);
-
-        // --- BƯỚC 3: XÁC NHẬN ---
         String ownerInfo = (v != null) ? v.getOwnerName() : "Không rõ";
+        String entryTimeStr = ticket.getEntryTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+
         int confirm = JOptionPane.showConfirmDialog(this,
                 "Xác nhận trả xe?\n\n" +
                         "Mã vé: " + ticket.getTicketID() + "\n" +
                         "Biển số: " + plate + "\n" +
                         "Chủ xe: " + ownerInfo + "\n" +
-                        "Giờ vào: " + ticket.getEntryTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")),
+                        "Giờ vào: " + entryTimeStr,
                 "Xác nhận thu vé",
                 JOptionPane.YES_NO_OPTION);
 
-        if (confirm != JOptionPane.YES_OPTION) {
-            return;
+        if (confirm == JOptionPane.YES_OPTION) {
+            processReturn(plate);
         }
+    }
 
-        // --- BƯỚC 4: THỰC HIỆN TRẢ XE ---
+    private void processReturn(String plate) {
         boolean success = parkingLot.retrieveVehicle(plate);
 
         if (success) {
+            String exitTimeStr = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
             JOptionPane.showMessageDialog(this,
-                    "Đã thu vé và trả xe thành công!\nBiển số: " + plate + "\nGiờ ra: "
-                            + java.time.LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")),
+                    "Đã thu vé và trả xe thành công!\nBiển số: " + plate + "\nGiờ ra: " + exitTimeStr,
                     "Thành công",
                     JOptionPane.INFORMATION_MESSAGE);
             txtInput.setText("");

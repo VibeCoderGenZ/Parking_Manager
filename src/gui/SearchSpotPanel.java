@@ -6,22 +6,48 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+/**
+ * Panel tìm kiếm vị trí đỗ.
+ * Chức năng: Tìm chỗ đỗ theo Mã chỗ hoặc Biển số xe đang đỗ.
+ */
 public class SearchSpotPanel extends JPanel {
+
+    // --- Fields: Logic ---
     private ParkingLot parkingLot;
+
+    // --- Fields: UI Components ---
     private JComboBox<String> searchTypeCombo;
     private JTextField searchField;
     private JTable resultTable;
     private DefaultTableModel tableModel;
+    private JButton searchButton;
 
+    // --- Constructor ---
     public SearchSpotPanel(ParkingLot parkingLot) {
         this.parkingLot = parkingLot;
+
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // --- Top Panel: Search Controls ---
+        initComponents();
+    }
+
+    // --- Initialization Methods ---
+
+    private void initComponents() {
+        // 1. Top Panel: Search Controls
+        initSearchControls();
+
+        // 2. Center Panel: Results Table
+        initResultTable();
+
+        // 3. Event Handling
+        initEvents();
+    }
+
+    private void initSearchControls() {
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
         topPanel.add(new JLabel("Tìm kiếm theo:"));
@@ -33,12 +59,13 @@ public class SearchSpotPanel extends JPanel {
         searchField = new JTextField(20);
         topPanel.add(searchField);
 
-        JButton searchButton = new JButton("Tìm kiếm");
+        searchButton = new JButton("Tìm kiếm");
         topPanel.add(searchButton);
 
         add(topPanel, BorderLayout.NORTH);
+    }
 
-        // --- Center Panel: Results Table ---
+    private void initResultTable() {
         String[] columnNames = { "Mã Chỗ", "Loại Xe Cho Phép", "Trạng Thái", "Biển Số Xe" };
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
@@ -47,26 +74,21 @@ public class SearchSpotPanel extends JPanel {
             }
         };
         resultTable = new JTable(tableModel);
+        resultTable.setRowHeight(25);
+        resultTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
+
         JScrollPane scrollPane = new JScrollPane(resultTable);
         add(scrollPane, BorderLayout.CENTER);
-
-        // --- Event Handling ---
-        searchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                performSearch();
-            }
-        });
-
-        searchField.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                performSearch();
-            }
-        });
     }
 
-    private void performSearch() {
+    private void initEvents() {
+        searchButton.addActionListener(this::handleSearchAction);
+        searchField.addActionListener(this::handleSearchAction);
+    }
+
+    // --- Business Logic ---
+
+    private void handleSearchAction(ActionEvent e) {
         String keyword = searchField.getText().trim();
         if (keyword.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập từ khóa tìm kiếm!", "Thông báo",
@@ -79,23 +101,34 @@ public class SearchSpotPanel extends JPanel {
         ArrayList<ParkingSpot> results = new ArrayList<>();
 
         if ("Mã Chỗ".equals(searchType)) {
-            try {
-                int spotID = Integer.parseInt(keyword);
-                ParkingSpot s = parkingLot.getSpotBySpotID(spotID);
-                if (s != null) {
-                    results.add(s);
-                }
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Mã chỗ phải là số!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+            searchBySpotId(keyword, results);
         } else if ("Biển Số Xe".equals(searchType)) {
-            ParkingSpot s = parkingLot.getSpotByLicensePlate(keyword);
+            searchByLicensePlate(keyword, results);
+        }
+
+        displayResults(results);
+    }
+
+    private void searchBySpotId(String keyword, ArrayList<ParkingSpot> results) {
+        try {
+            int spotID = Integer.parseInt(keyword);
+            ParkingSpot s = parkingLot.getSpotBySpotID(spotID);
             if (s != null) {
                 results.add(s);
             }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Mã chỗ phải là số!", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
+    }
 
+    private void searchByLicensePlate(String keyword, ArrayList<ParkingSpot> results) {
+        ParkingSpot s = parkingLot.getSpotByLicensePlate(keyword);
+        if (s != null) {
+            results.add(s);
+        }
+    }
+
+    private void displayResults(ArrayList<ParkingSpot> results) {
         if (results.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả nào!", "Thông báo",
                     JOptionPane.INFORMATION_MESSAGE);

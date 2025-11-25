@@ -267,34 +267,6 @@ public class ParkingLot {
         return used;
     }
 
-    // Thêm vé mới
-    public boolean addTicket(int ticketID, int spotID, String licensePlate, LocalDateTime entryTime,
-            LocalDateTime exitTime) {
-        if (licensePlate == null || entryTime == null)
-            return false;
-        String plate = licensePlate.trim();
-        if (plate.isEmpty())
-            return false;
-        if (getTicketByTicketID(ticketID) != null)
-            return false;
-        // Kiểm tra xe có tồn tại không
-        if (getVehicleByLicensePlate(plate) == null)
-            return false;
-        ParkingSpot spot = getSpotBySpotID(spotID);
-        if (spot == null)
-            return false;
-        // Nếu vé active thì spot phải occupied và khớp biển số
-        if (exitTime == null) {
-            if (!spot.isOccupied())
-                return false;
-            String spotPlate = spot.getLicensePlate();
-            if (spotPlate == null || !spotPlate.equalsIgnoreCase(plate))
-                return false;
-        }
-        tickets.add(new Ticket(ticketID, spotID, plate, entryTime, exitTime));
-        return true;
-    }
-
     // Đỗ phương tiện
     public boolean parkVehicleAuto(String licensePlate) {
         if (licensePlate == null || licensePlate.isBlank())

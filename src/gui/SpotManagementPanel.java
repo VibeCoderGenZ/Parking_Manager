@@ -16,15 +16,16 @@ import java.util.ArrayList;
 public class SpotManagementPanel extends JPanel {
 
     // --- Fields: Logic ---
+    /** Đối tượng xử lý logic chính. */
     private ParkingLot parkingLot;
 
     // --- Fields: UI Components ---
-    private JTable table;
-    private DefaultTableModel tableModel;
-    private JComboBox<Object> cbFilterType; // Lọc theo loại xe (Tất cả / Xe máy / Ô tô...)
-    private JComboBox<String> cbFilterStatus; // Lọc theo trạng thái (Tất cả / Trống / Có xe)
-    private JButton btnAddSpots;
-    private JButton btnResetAll;
+    private JTable table; // Bảng hiển thị danh sách chỗ đỗ
+    private DefaultTableModel tableModel; // Model dữ liệu cho bảng
+    private JComboBox<Object> cbFilterType; // Bộ lọc theo loại xe (Tất cả / Xe máy / Ô tô...)
+    private JComboBox<String> cbFilterStatus; // Bộ lọc theo trạng thái (Tất cả / Trống / Có xe)
+    private JButton btnAddSpots; // Nút thêm chỗ đỗ mới
+    private JButton btnResetAll; // Nút reset toàn bộ hệ thống
 
     // --- Constructor ---
     public SpotManagementPanel(ParkingLot parkingLot) {
@@ -34,7 +35,7 @@ public class SpotManagementPanel extends JPanel {
         // Khởi tạo giao diện
         initComponents();
 
-        // Tải dữ liệu ban đầu
+        // Tải dữ liệu ban đầu lên bảng
         loadData();
     }
 
@@ -132,24 +133,25 @@ public class SpotManagementPanel extends JPanel {
     // --- Business Logic & Data Loading ---
 
     /**
-     * Tải dữ liệu từ ParkingLot vào bảng, có áp dụng bộ lọc.
+     * Tải dữ liệu từ ParkingLot vào bảng, có áp dụng các bộ lọc hiện tại.
+     * Được gọi khi khởi tạo hoặc khi người dùng thay đổi bộ lọc.
      */
     public void loadData() {
-        tableModel.setRowCount(0); // Xóa dữ liệu cũ
+        tableModel.setRowCount(0); // Xóa dữ liệu cũ trên bảng
 
-        // Lấy giá trị từ bộ lọc
+        // Lấy giá trị hiện tại từ các bộ lọc
         Object selectedType = cbFilterType.getSelectedItem();
         String selectedStatus = (String) cbFilterStatus.getSelectedItem();
 
         ArrayList<ParkingSpot> allSpots = parkingLot.getSpots();
 
         for (ParkingSpot spot : allSpots) {
-            // 1. Kiểm tra lọc theo Loại xe
+            // 1. Kiểm tra điều kiện lọc theo Loại xe
             if (!"Tất cả".equals(selectedType) && spot.getAllowedType() != selectedType) {
-                continue; // Bỏ qua nếu không khớp loại
+                continue; // Bỏ qua nếu không khớp loại xe đã chọn
             }
 
-            // 2. Kiểm tra lọc theo Trạng thái
+            // 2. Kiểm tra điều kiện lọc theo Trạng thái (Trống / Có xe)
             if ("Trống".equals(selectedStatus) && spot.isOccupied()) {
                 continue; // Đang tìm chỗ trống mà chỗ này có xe -> Bỏ qua
             }
@@ -157,7 +159,7 @@ public class SpotManagementPanel extends JPanel {
                 continue; // Đang tìm chỗ có xe mà chỗ này trống -> Bỏ qua
             }
 
-            // 3. Thêm vào bảng
+            // 3. Thêm vào bảng nếu thỏa mãn tất cả điều kiện
             String status = spot.isOccupied() ? "Có xe" : "Trống";
             String plate = spot.getLicensePlate() == null ? "---" : spot.getLicensePlate();
 
@@ -174,7 +176,8 @@ public class SpotManagementPanel extends JPanel {
     // --- Dialogs & Actions ---
 
     /**
-     * Hiển thị Dialog để thêm nhiều vị trí đỗ cùng lúc.
+     * Hiển thị Dialog (Cửa sổ phụ) để thêm nhiều vị trí đỗ cùng lúc.
+     * Cho phép chọn loại xe và số lượng cần thêm.
      */
     private void showAddSpotsDialog() {
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Thêm Vị Trí Đỗ", true);
@@ -185,14 +188,14 @@ public class SpotManagementPanel extends JPanel {
 
         // Components trong Dialog
         JComboBox<VehicleType> cbType = new JComboBox<>(VehicleType.values());
-        JSpinner spinnerQty = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
+        JSpinner spinnerQty = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1)); // Min 1, Max 100
         JButton btnConfirm = new JButton("Thêm");
 
         // Style nút xác nhận
         btnConfirm.setBackground(new Color(0, 102, 204));
         btnConfirm.setForeground(Color.WHITE);
 
-        // Layout components
+        // Layout components (Sắp xếp các thành phần vào lưới)
         gbc.gridx = 0;
         gbc.gridy = 0;
         dialog.add(new JLabel("Loại xe cho phép:"), gbc);
@@ -214,7 +217,7 @@ public class SpotManagementPanel extends JPanel {
         gbc.gridwidth = 2;
         dialog.add(btnConfirm, gbc);
 
-        // Logic nút Thêm
+        // Logic xử lý khi nhấn nút Thêm
         btnConfirm.addActionListener(e -> {
             VehicleType type = (VehicleType) cbType.getSelectedItem();
             int qty = (int) spinnerQty.getValue();
@@ -226,17 +229,18 @@ public class SpotManagementPanel extends JPanel {
             }
 
             JOptionPane.showMessageDialog(dialog, "Đã thêm " + qty + " vị trí đỗ mới.");
-            loadData(); // Refresh lại bảng chính
-            dialog.dispose();
+            loadData(); // Refresh lại bảng chính để hiện dữ liệu mới
+            dialog.dispose(); // Đóng dialog
         });
 
         dialog.pack();
-        dialog.setLocationRelativeTo(this);
+        dialog.setLocationRelativeTo(this); // Căn giữa so với panel cha
         dialog.setVisible(true);
     }
 
     /**
-     * Hiển thị cảnh báo và thực hiện Reset toàn bộ dữ liệu.
+     * Hiển thị cảnh báo và thực hiện Reset toàn bộ dữ liệu hệ thống.
+     * Cần xác nhận kỹ lưỡng vì hành động này xóa sạch dữ liệu.
      */
     private void showResetConfirmation() {
         int confirm = JOptionPane.showConfirmDialog(this,
@@ -249,10 +253,10 @@ public class SpotManagementPanel extends JPanel {
                 JOptionPane.ERROR_MESSAGE);
 
         if (confirm == JOptionPane.YES_OPTION) {
-            parkingLot.resetTickets(); // Xóa vé trước để tránh lỗi ràng buộc
-            parkingLot.resetSpots(); // Xóa vị trí
+            parkingLot.resetTickets(); // Xóa vé trước để tránh lỗi ràng buộc dữ liệu
+            parkingLot.resetSpots(); // Sau đó xóa vị trí
 
-            loadData(); // Refresh lại bảng (sẽ trống trơn)
+            loadData(); // Refresh lại bảng (lúc này sẽ trống trơn)
             JOptionPane.showMessageDialog(this, "Hệ thống bãi đỗ đã được làm mới hoàn toàn.");
         }
     }

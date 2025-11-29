@@ -16,14 +16,15 @@ import java.util.ArrayList;
 public class VehicleManagementPanel extends JPanel {
 
     // --- Fields: Logic ---
+    /** Đối tượng xử lý logic chính. */
     private ParkingLot parkingLot;
 
     // --- Fields: UI Components ---
-    private JTable table;
-    private DefaultTableModel tableModel;
-    private JButton btnAdd;
-    private JButton btnRemove;
-    private JButton btnRemoveAll;
+    private JTable table; // Bảng hiển thị danh sách xe
+    private DefaultTableModel tableModel; // Model dữ liệu
+    private JButton btnAdd; // Nút thêm xe
+    private JButton btnRemove; // Nút xóa xe
+    private JButton btnRemoveAll; // Nút xóa tất cả xe
 
     // --- Constructor ---
     public VehicleManagementPanel(ParkingLot parkingLot) {
@@ -31,7 +32,7 @@ public class VehicleManagementPanel extends JPanel {
 
         setLayout(new BorderLayout());
         initComponents();
-        loadData();
+        loadData(); // Tải dữ liệu ngay khi khởi tạo
     }
 
     // --- Initialization Methods ---
@@ -94,10 +95,11 @@ public class VehicleManagementPanel extends JPanel {
     // --- Business Logic ---
 
     /**
-     * Tải lại dữ liệu từ logic lên bảng.
+     * Tải lại toàn bộ dữ liệu xe từ logic lên bảng hiển thị.
+     * Được gọi sau khi thêm, xóa hoặc khi cần làm mới.
      */
     public void loadData() {
-        tableModel.setRowCount(0);
+        tableModel.setRowCount(0); // Xóa dữ liệu cũ
         ArrayList<Vehicle> list = parkingLot.getVehicles();
         for (Vehicle v : list) {
             Object[] row = {
@@ -111,7 +113,8 @@ public class VehicleManagementPanel extends JPanel {
     }
 
     /**
-     * Hiển thị Dialog thêm xe mới.
+     * Hiển thị Dialog (Cửa sổ phụ) để nhập thông tin xe mới.
+     * Bao gồm: Biển số, Loại xe, Chủ xe, SĐT.
      */
     private void showAddVehicleDialog() {
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Thêm Xe Mới", true);
@@ -138,7 +141,7 @@ public class VehicleManagementPanel extends JPanel {
 
         btnConfirm.addActionListener(e -> {
             if (processAddVehicle(txtPlate, cbType, txtOwner, txtPhone)) {
-                dialog.dispose();
+                dialog.dispose(); // Đóng dialog nếu thêm thành công
             }
         });
 
@@ -163,6 +166,11 @@ public class VehicleManagementPanel extends JPanel {
         dialog.add(comp, gbc);
     }
 
+    /**
+     * Xử lý logic thêm xe khi người dùng nhấn nút xác nhận trên Dialog.
+     * 
+     * @return true nếu thêm thành công, false nếu thất bại.
+     */
     private boolean processAddVehicle(JTextField txtPlate, JComboBox<VehicleType> cbType, JTextField txtOwner,
             JTextField txtPhone) {
         String plate = txtPlate.getText().trim();
@@ -178,7 +186,7 @@ public class VehicleManagementPanel extends JPanel {
         boolean success = parkingLot.addVehicle(plate, type, owner, phone);
         if (success) {
             JOptionPane.showMessageDialog(this, "Thêm xe thành công!");
-            loadData();
+            loadData(); // Refresh bảng
             return true;
         } else {
             JOptionPane.showMessageDialog(this, "Thêm thất bại!\n(Có thể biển số đã tồn tại)", "Lỗi",
@@ -188,7 +196,8 @@ public class VehicleManagementPanel extends JPanel {
     }
 
     /**
-     * Hiển thị Dialog xóa xe.
+     * Hiển thị Dialog yêu cầu nhập biển số xe cần xóa.
+     * Nếu người dùng đang chọn 1 dòng trên bảng, tự động điền biển số đó vào.
      */
     private void showRemoveVehicleDialog() {
         // Nếu có dòng đang chọn thì lấy biển số đó luôn
@@ -220,7 +229,8 @@ public class VehicleManagementPanel extends JPanel {
     }
 
     /**
-     * Hiển thị xác nhận xóa tất cả.
+     * Hiển thị cảnh báo và thực hiện xóa toàn bộ dữ liệu xe.
+     * Cần xác nhận kỹ lưỡng.
      */
     private void showRemoveAllConfirmation() {
         int confirm = JOptionPane.showConfirmDialog(this,

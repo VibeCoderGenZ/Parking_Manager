@@ -16,14 +16,18 @@ import java.util.ArrayList;
 public class TicketManagementPanel extends JPanel {
 
     // --- Fields: Logic ---
+    /** Đối tượng xử lý logic chính. */
     private ParkingLot parkingLot;
-    private boolean isShowingActive = true; // Trạng thái hiện tại
+    /**
+     * Trạng thái hiển thị hiện tại: true = Vé đang hoạt động, false = Vé lịch sử.
+     */
+    private boolean isShowingActive = true;
 
     // --- Fields: UI Components ---
-    private JTable table;
-    private DefaultTableModel tableModel;
-    private JButton btnActiveTickets;
-    private JButton btnUsedTickets;
+    private JTable table; // Bảng hiển thị danh sách vé
+    private DefaultTableModel tableModel; // Model dữ liệu cho bảng
+    private JButton btnActiveTickets; // Nút chuyển sang xem vé đang hoạt động
+    private JButton btnUsedTickets; // Nút chuyển sang xem vé đã trả
 
     // --- Constructor ---
     public TicketManagementPanel(ParkingLot parkingLot) {
@@ -32,7 +36,7 @@ public class TicketManagementPanel extends JPanel {
         setLayout(new BorderLayout());
         initComponents();
 
-        // Mặc định hiển thị vé đang hoạt động
+        // Mặc định hiển thị vé đang hoạt động khi mới mở
         loadData(true);
     }
 
@@ -92,21 +96,22 @@ public class TicketManagementPanel extends JPanel {
     // --- Business Logic ---
 
     /**
-     * Tải dữ liệu vé lên bảng.
+     * Tải dữ liệu vé lên bảng hiển thị.
      * 
-     * @param isActive true: tải vé đang hoạt động, false: tải vé đã trả.
+     * @param isActive true: tải danh sách vé đang hoạt động (xe đang trong bãi).
+     *                 false: tải danh sách vé đã trả (lịch sử ra vào).
      */
     private void loadData(boolean isActive) {
         this.isShowingActive = isActive;
-        tableModel.setRowCount(0); // Xóa dữ liệu cũ
+        tableModel.setRowCount(0); // Xóa dữ liệu cũ trên bảng
 
         ArrayList<Ticket> list;
         if (isActive) {
             list = parkingLot.getActiveTicket();
-            updateButtonState(true);
+            updateButtonState(true); // Cập nhật giao diện nút bấm
         } else {
             list = parkingLot.getUsedTicket();
-            updateButtonState(false);
+            updateButtonState(false); // Cập nhật giao diện nút bấm
         }
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
@@ -126,11 +131,15 @@ public class TicketManagementPanel extends JPanel {
         }
     }
 
+    /**
+     * Cập nhật trạng thái (enable/disable, font style) của các nút bấm
+     * để phản ánh chế độ xem hiện tại.
+     */
     private void updateButtonState(boolean isActiveMode) {
-        btnActiveTickets.setEnabled(!isActiveMode);
-        btnUsedTickets.setEnabled(isActiveMode);
+        btnActiveTickets.setEnabled(!isActiveMode); // Nếu đang xem Active thì disable nút Active
+        btnUsedTickets.setEnabled(isActiveMode); // Ngược lại
 
-        // Highlight nút đang chọn (Optional)
+        // Highlight nút đang chọn (In đậm text)
         if (isActiveMode) {
             btnActiveTickets.setFont(new Font("Segoe UI", Font.BOLD, 14));
             btnUsedTickets.setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -141,7 +150,8 @@ public class TicketManagementPanel extends JPanel {
     }
 
     /**
-     * Refresh lại dữ liệu hiện tại (dùng khi chuyển tab quay lại).
+     * Refresh lại dữ liệu hiện tại (dùng khi chuyển tab quay lại màn hình này).
+     * Giữ nguyên chế độ xem (Active/Used) đang chọn.
      */
     public void refresh() {
         loadData(isShowingActive);

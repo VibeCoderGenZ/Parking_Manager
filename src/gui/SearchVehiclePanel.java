@@ -15,14 +15,15 @@ import java.util.ArrayList;
 public class SearchVehiclePanel extends JPanel {
 
     // --- Fields: Logic ---
+    /** Đối tượng xử lý logic chính. */
     private ParkingLot parkingLot;
 
     // --- Fields: UI Components ---
-    private JComboBox<String> searchTypeCombo;
-    private JTextField searchField;
-    private JTable resultTable;
-    private DefaultTableModel tableModel;
-    private JButton searchButton;
+    private JComboBox<String> searchTypeCombo; // Lựa chọn tiêu chí tìm kiếm
+    private JTextField searchField; // Ô nhập từ khóa
+    private JTable resultTable; // Bảng hiển thị kết quả
+    private DefaultTableModel tableModel; // Model dữ liệu
+    private JButton searchButton; // Nút tìm kiếm
 
     // --- Constructor ---
     public SearchVehiclePanel(ParkingLot parkingLot) {
@@ -88,6 +89,10 @@ public class SearchVehiclePanel extends JPanel {
 
     // --- Business Logic ---
 
+    /**
+     * Xử lý sự kiện tìm kiếm xe.
+     * Hỗ trợ tìm theo Biển số hoặc Tên chủ xe.
+     */
     private void handleSearchAction(ActionEvent e) {
         String keyword = searchField.getText().trim();
         if (keyword.isEmpty()) {
@@ -96,7 +101,7 @@ public class SearchVehiclePanel extends JPanel {
             return;
         }
 
-        tableModel.setRowCount(0); // Clear previous results
+        tableModel.setRowCount(0); // Xóa kết quả cũ
         String searchType = (String) searchTypeCombo.getSelectedItem();
         ArrayList<Vehicle> results = new ArrayList<>();
 
@@ -109,6 +114,9 @@ public class SearchVehiclePanel extends JPanel {
         displayResults(results);
     }
 
+    /**
+     * Tìm xe theo biển số (chính xác).
+     */
     private void searchByLicensePlate(String keyword, ArrayList<Vehicle> results) {
         Vehicle v = parkingLot.getVehicleByLicensePlate(keyword);
         if (v != null) {
@@ -116,10 +124,17 @@ public class SearchVehiclePanel extends JPanel {
         }
     }
 
+    /**
+     * Tìm xe theo tên chủ xe (gần đúng hoặc chính xác tùy logic cài đặt trong
+     * ParkingLot).
+     */
     private void searchByOwnerName(String keyword, ArrayList<Vehicle> results) {
         results.addAll(parkingLot.getVehicleByOwnerName(keyword));
     }
 
+    /**
+     * Hiển thị kết quả tìm kiếm lên bảng.
+     */
     private void displayResults(ArrayList<Vehicle> results) {
         if (results.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả nào!", "Thông báo",

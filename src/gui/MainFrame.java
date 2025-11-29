@@ -18,14 +18,19 @@ import logic.ParkingLot;
 public class MainFrame extends JFrame {
 
     // --- Fields: Logic ---
+    /**
+     * Đối tượng quản lý toàn bộ logic của hệ thống (Singleton-like trong phạm vi
+     * MainFrame).
+     */
     private ParkingLot parkingLot;
 
     // --- Fields: UI Components ---
-    private JPanel navPanel; // Panel bên trái chứa nút bấm
-    private JPanel contentPanel; // Panel ở giữa hiển thị nội dung
-    private CardLayout cardLayout; // Layout quản lý chuyển đổi màn hình
+    private JPanel navPanel; // Panel bên trái chứa các nút điều hướng
+    private JPanel contentPanel; // Panel ở giữa hiển thị nội dung chính
+    private CardLayout cardLayout; // Layout quản lý việc chuyển đổi giữa các màn hình chức năng
 
     // --- Fields: Functional Panels ---
+    // Các màn hình chức năng được khởi tạo một lần và tái sử dụng
     private VehicleManagementPanel vehiclePanel;
     private TicketManagementPanel ticketPanel;
     private SpotManagementPanel spotPanel;
@@ -33,13 +38,13 @@ public class MainFrame extends JFrame {
 
     // --- Constructor ---
     public MainFrame() {
-        // 1. Khởi tạo Logic
+        // 1. Khởi tạo Logic (Load dữ liệu từ file)
         initLogic();
 
-        // 2. Cấu hình cửa sổ chính
+        // 2. Cấu hình cửa sổ chính (Title, Size, Close Operation)
         initFrameSettings();
 
-        // 3. Khởi tạo giao diện
+        // 3. Khởi tạo giao diện (Navigation + Content Panels)
         initComponents();
     }
 
@@ -93,27 +98,31 @@ public class MainFrame extends JFrame {
     }
 
     /**
-     * Tạo panel điều hướng bên trái.
+     * Tạo panel điều hướng bên trái (Navigation Bar).
+     * Chứa các nút để chuyển đổi giữa các chức năng.
      */
     private void initNavPanel() {
         navPanel = new JPanel();
         navPanel.setLayout(new GridLayout(7, 1, 10, 10)); // 7 hàng, 1 cột, khoảng cách 10px
-        navPanel.setPreferredSize(new Dimension(200, 0)); // Rộng 200px
+        navPanel.setPreferredSize(new Dimension(200, 0)); // Rộng 200px cố định
         navPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        navPanel.setBackground(new Color(240, 240, 240)); // Màu nền nhẹ
+        navPanel.setBackground(new Color(240, 240, 240)); // Màu nền xám nhẹ
 
-        // Tạo các nút chức năng
+        // Tạo các nút chức năng tương ứng với yêu cầu
         createNavButton("1. Tạo Vé / Thu Vé", "FUNCTION_1");
         createNavButton("2. Quản Lý Vé", "FUNCTION_2");
-        navPanel.add(new JLabel()); // Khoảng trống (Vị trí 3)
+        navPanel.add(new JLabel()); // Khoảng trống (Vị trí 3 - Placeholder)
         createNavButton("4. Quản Lý Xe", "FUNCTION_4");
         createNavButton("5. Quản Lý Bãi Xe", "FUNCTION_5");
-        navPanel.add(new JLabel()); // Khoảng trống (Vị trí 6)
+        navPanel.add(new JLabel()); // Khoảng trống (Vị trí 6 - Placeholder)
         createNavButton("7. Tìm Kiếm", "FUNCTION_7");
     }
 
     /**
-     * Helper để tạo nút điều hướng và gắn sự kiện.
+     * Helper method để tạo nút điều hướng và gắn sự kiện chuyển tab.
+     * 
+     * @param text     Tên hiển thị trên nút.
+     * @param cardName Tên định danh của màn hình (Card Name) trong CardLayout.
      */
     private void createNavButton(String text, String cardName) {
         JButton btn = new JButton(text);
@@ -121,8 +130,10 @@ public class MainFrame extends JFrame {
         btn.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
         btn.addActionListener(e -> {
-            // Refresh dữ liệu cho các panel cần thiết trước khi hiển thị
+            // Refresh dữ liệu cho các panel cần thiết trước khi hiển thị để đảm bảo tính
+            // nhất quán
             refreshPanelData(cardName);
+            // Chuyển đổi màn hình hiển thị
             cardLayout.show(contentPanel, cardName);
         });
 
@@ -130,7 +141,8 @@ public class MainFrame extends JFrame {
     }
 
     /**
-     * Tạo panel nội dung chính (CardLayout).
+     * Tạo panel nội dung chính sử dụng CardLayout.
+     * Khởi tạo tất cả các màn hình chức năng và thêm vào CardLayout.
      */
     private void initContentPanel() {
         contentPanel = new JPanel();
@@ -140,15 +152,16 @@ public class MainFrame extends JFrame {
 
         // --- Khởi tạo các màn hình chức năng ---
 
-        // Màn hình 4: Quản lý xe (Cần tạo trước để truyền vào CreateTicketPanel)
+        // Màn hình 4: Quản lý xe (Cần tạo trước để truyền callback vào
+        // CreateTicketPanel)
         vehiclePanel = new VehicleManagementPanel(parkingLot);
         contentPanel.add(vehiclePanel, "FUNCTION_4");
 
-        // Màn hình 1: Tạo vé / Thu vé (TabbedPane)
+        // Màn hình 1: Tạo vé / Thu vé (Sử dụng TabbedPane để gộp 2 chức năng con)
         JTabbedPane ticketTabPane = new JTabbedPane();
         ticketTabPane.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
-        // Tab 1: Tạo vé (Có callback chuyển sang màn hình thêm xe)
+        // Tab 1: Tạo vé (Có callback chuyển sang màn hình thêm xe nếu xe chưa tồn tại)
         CreateTicketPanel createTicketPanel = new CreateTicketPanel(parkingLot, () -> {
             vehiclePanel.loadData(); // Refresh lại danh sách xe
             cardLayout.show(contentPanel, "FUNCTION_4"); // Chuyển sang màn hình quản lý xe
@@ -165,7 +178,7 @@ public class MainFrame extends JFrame {
         ticketPanel = new TicketManagementPanel(parkingLot);
         contentPanel.add(ticketPanel, "FUNCTION_2");
 
-        // Màn hình 5: Quản lý bãi xe
+        // Màn hình 5: Quản lý bãi xe (Chỗ đỗ)
         spotPanel = new SpotManagementPanel(parkingLot);
         contentPanel.add(spotPanel, "FUNCTION_5");
 
@@ -173,7 +186,7 @@ public class MainFrame extends JFrame {
         searchPanel = new SearchPanel(parkingLot);
         contentPanel.add(searchPanel, "FUNCTION_7");
 
-        // Màn hình chờ (Placeholder)
+        // Màn hình chờ (Placeholder) khi mới mở ứng dụng
         JLabel placeholder = new JLabel("Chào mừng đến với Parking Manager", SwingConstants.CENTER);
         placeholder.setFont(new Font("Segoe UI", Font.BOLD, 24));
         placeholder.setForeground(Color.GRAY);
@@ -185,7 +198,10 @@ public class MainFrame extends JFrame {
 
     /**
      * Làm mới dữ liệu của panel khi chuyển tab.
-     * (Do CardLayout không tự refresh, ta cần gọi thủ công)
+     * (Do CardLayout không tự refresh, ta cần gọi thủ công để cập nhật dữ liệu mới
+     * nhất).
+     * 
+     * @param cardName Tên màn hình sắp được hiển thị.
      */
     private void refreshPanelData(String cardName) {
         switch (cardName) {

@@ -16,14 +16,26 @@ import logic.Vehicle;
 public class CreateTicketPanel extends JPanel {
 
     // --- Fields: Logic ---
+    /** Đối tượng xử lý logic chính của bãi đỗ xe. */
     private ParkingLot parkingLot;
-    private Runnable onAddNewVehicle; // Callback để chuyển sang màn hình thêm xe
+    /**
+     * Callback function: Được gọi khi người dùng muốn thêm xe mới (chuyển hướng
+     * sang màn hình Quản lý xe).
+     */
+    private Runnable onAddNewVehicle;
 
     // --- Fields: UI Components ---
-    private JTextField txtLicensePlate;
-    private JButton btnPark;
+    private JTextField txtLicensePlate; // Ô nhập biển số xe
+    private JButton btnPark; // Nút thực hiện tạo vé
 
     // --- Constructor ---
+    /**
+     * Khởi tạo Panel Tạo Vé.
+     * 
+     * @param parkingLot      Tham chiếu đến logic xử lý.
+     * @param onAddNewVehicle Hành động cần thực hiện khi người dùng chọn "Thêm xe
+     *                        mới".
+     */
     public CreateTicketPanel(ParkingLot parkingLot, Runnable onAddNewVehicle) {
         this.parkingLot = parkingLot;
         this.onAddNewVehicle = onAddNewVehicle;
@@ -34,6 +46,9 @@ public class CreateTicketPanel extends JPanel {
 
     // --- Initialization Methods ---
 
+    /**
+     * Khởi tạo và bố trí các thành phần giao diện.
+     */
     private void initComponents() {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10); // Khoảng cách giữa các thành phần
@@ -57,7 +72,7 @@ public class CreateTicketPanel extends JPanel {
         gbc.gridy = 1;
         add(txtLicensePlate, gbc);
 
-        // 3. Nút hành động
+        // 3. Nút hành động (Tạo vé)
         btnPark = new JButton("Tạo Vé / Đỗ Xe");
         btnPark.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnPark.setBackground(new Color(0, 102, 204)); // Xanh dương
@@ -71,13 +86,18 @@ public class CreateTicketPanel extends JPanel {
 
         // Gắn sự kiện
         btnPark.addActionListener(this::handleParkAction);
-        txtLicensePlate.addActionListener(this::handleParkAction); // Cho phép nhấn Enter
+        txtLicensePlate.addActionListener(this::handleParkAction); // Cho phép nhấn Enter để submit
     }
 
     // --- Business Logic ---
 
     /**
      * Xử lý logic khi nhấn nút Tạo vé.
+     * 1. Validate biển số.
+     * 2. Kiểm tra xe đã đăng ký chưa -> Nếu chưa thì hỏi thêm mới.
+     * 3. Thực hiện logic đỗ xe (tìm chỗ trống, tạo vé).
+     * 
+     * @param e Sự kiện ActionEvent.
      */
     private void handleParkAction(ActionEvent e) {
         String plate = txtLicensePlate.getText().trim();
@@ -95,7 +115,7 @@ public class CreateTicketPanel extends JPanel {
             return;
         }
 
-        // 3. Gọi logic đỗ xe
+        // 3. Gọi logic đỗ xe (Tự động tìm chỗ phù hợp)
         boolean success = parkingLot.parkVehicleAuto(plate);
 
         if (success) {
@@ -107,6 +127,7 @@ public class CreateTicketPanel extends JPanel {
 
     /**
      * Hiển thị hộp thoại hỏi người dùng có muốn thêm xe mới không.
+     * Nếu chọn YES -> Gọi callback onAddNewVehicle để chuyển màn hình.
      */
     private void askToAddNewVehicle(String plate) {
         int choice = JOptionPane.showConfirmDialog(this,
@@ -123,7 +144,7 @@ public class CreateTicketPanel extends JPanel {
     }
 
     /**
-     * Hiển thị thông báo thành công và chi tiết vé.
+     * Hiển thị thông báo thành công và chi tiết vé vừa tạo.
      */
     private void showSuccessMessage(String plate, Vehicle v) {
         Ticket t = parkingLot.getTicketByLicensePlate(plate);
@@ -139,7 +160,7 @@ public class CreateTicketPanel extends JPanel {
                 "Thành công",
                 JOptionPane.INFORMATION_MESSAGE);
 
-        // Reset form
+        // Reset form để nhập xe tiếp theo
         txtLicensePlate.setText("");
         txtLicensePlate.requestFocus();
     }

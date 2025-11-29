@@ -16,15 +16,17 @@ import java.util.ArrayList;
 public class SearchTicketPanel extends JPanel {
 
     // --- Fields: Logic ---
+    /** Đối tượng xử lý logic chính. */
     private ParkingLot parkingLot;
+    /** Định dạng ngày giờ hiển thị. */
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
     // --- Fields: UI Components ---
-    private JComboBox<String> searchTypeCombo;
-    private JTextField searchField;
-    private JTable resultTable;
-    private DefaultTableModel tableModel;
-    private JButton searchButton;
+    private JComboBox<String> searchTypeCombo; // Lựa chọn tiêu chí tìm kiếm
+    private JTextField searchField; // Ô nhập từ khóa
+    private JTable resultTable; // Bảng hiển thị kết quả
+    private DefaultTableModel tableModel; // Model dữ liệu
+    private JButton searchButton; // Nút tìm kiếm
 
     // --- Constructor ---
     public SearchTicketPanel(ParkingLot parkingLot) {
@@ -90,6 +92,10 @@ public class SearchTicketPanel extends JPanel {
 
     // --- Business Logic ---
 
+    /**
+     * Xử lý sự kiện tìm kiếm vé.
+     * Hỗ trợ tìm theo Mã vé (chính xác) hoặc Biển số xe (lịch sử vé của xe đó).
+     */
     private void handleSearchAction(ActionEvent e) {
         String keyword = searchField.getText().trim();
         if (keyword.isEmpty()) {
@@ -98,7 +104,7 @@ public class SearchTicketPanel extends JPanel {
             return;
         }
 
-        tableModel.setRowCount(0); // Clear previous results
+        tableModel.setRowCount(0); // Xóa kết quả cũ
         String searchType = (String) searchTypeCombo.getSelectedItem();
         ArrayList<Ticket> results = new ArrayList<>();
 
@@ -111,6 +117,12 @@ public class SearchTicketPanel extends JPanel {
         displayResults(results);
     }
 
+    /**
+     * Tìm vé theo ID.
+     * 
+     * @param keyword Mã vé (số nguyên).
+     * @param results Danh sách kết quả.
+     */
     private void searchByTicketId(String keyword, ArrayList<Ticket> results) {
         try {
             int ticketID = Integer.parseInt(keyword);
@@ -123,8 +135,14 @@ public class SearchTicketPanel extends JPanel {
         }
     }
 
+    /**
+     * Tìm tất cả vé liên quan đến một biển số xe (bao gồm cả vé cũ).
+     * 
+     * @param keyword Biển số xe.
+     * @param results Danh sách kết quả.
+     */
     private void searchByLicensePlate(String keyword, ArrayList<Ticket> results) {
-        // Search all tickets matching the license plate (history)
+        // Duyệt qua toàn bộ danh sách vé để tìm các vé khớp biển số
         for (Ticket t : parkingLot.getTickets()) {
             if (t.getLicensePlate().equalsIgnoreCase(keyword)) {
                 results.add(t);
@@ -132,6 +150,9 @@ public class SearchTicketPanel extends JPanel {
         }
     }
 
+    /**
+     * Hiển thị kết quả tìm kiếm lên bảng.
+     */
     private void displayResults(ArrayList<Ticket> results) {
         if (results.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả nào!", "Thông báo",

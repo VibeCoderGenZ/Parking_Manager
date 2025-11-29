@@ -15,14 +15,15 @@ import java.util.ArrayList;
 public class SearchSpotPanel extends JPanel {
 
     // --- Fields: Logic ---
+    /** Đối tượng xử lý logic chính. */
     private ParkingLot parkingLot;
 
     // --- Fields: UI Components ---
-    private JComboBox<String> searchTypeCombo;
-    private JTextField searchField;
-    private JTable resultTable;
-    private DefaultTableModel tableModel;
-    private JButton searchButton;
+    private JComboBox<String> searchTypeCombo; // Lựa chọn tiêu chí tìm kiếm
+    private JTextField searchField; // Ô nhập từ khóa
+    private JTable resultTable; // Bảng hiển thị kết quả
+    private DefaultTableModel tableModel; // Model dữ liệu cho bảng
+    private JButton searchButton; // Nút thực hiện tìm kiếm
 
     // --- Constructor ---
     public SearchSpotPanel(ParkingLot parkingLot) {
@@ -88,6 +89,12 @@ public class SearchSpotPanel extends JPanel {
 
     // --- Business Logic ---
 
+    /**
+     * Xử lý sự kiện khi người dùng nhấn nút Tìm kiếm hoặc Enter.
+     * 1. Lấy từ khóa và loại tìm kiếm.
+     * 2. Gọi hàm tìm kiếm tương ứng.
+     * 3. Hiển thị kết quả lên bảng.
+     */
     private void handleSearchAction(ActionEvent e) {
         String keyword = searchField.getText().trim();
         if (keyword.isEmpty()) {
@@ -96,7 +103,7 @@ public class SearchSpotPanel extends JPanel {
             return;
         }
 
-        tableModel.setRowCount(0); // Clear previous results
+        tableModel.setRowCount(0); // Xóa kết quả cũ
         String searchType = (String) searchTypeCombo.getSelectedItem();
         ArrayList<ParkingSpot> results = new ArrayList<>();
 
@@ -109,6 +116,12 @@ public class SearchSpotPanel extends JPanel {
         displayResults(results);
     }
 
+    /**
+     * Tìm kiếm vị trí đỗ theo ID (Mã chỗ).
+     * 
+     * @param keyword Chuỗi nhập vào (phải là số).
+     * @param results Danh sách chứa kết quả tìm được.
+     */
     private void searchBySpotId(String keyword, ArrayList<ParkingSpot> results) {
         try {
             int spotID = Integer.parseInt(keyword);
@@ -121,6 +134,12 @@ public class SearchSpotPanel extends JPanel {
         }
     }
 
+    /**
+     * Tìm kiếm vị trí đỗ đang chứa xe có biển số tương ứng.
+     * 
+     * @param keyword Biển số xe cần tìm.
+     * @param results Danh sách chứa kết quả tìm được.
+     */
     private void searchByLicensePlate(String keyword, ArrayList<ParkingSpot> results) {
         ParkingSpot s = parkingLot.getSpotByLicensePlate(keyword);
         if (s != null) {
@@ -128,6 +147,10 @@ public class SearchSpotPanel extends JPanel {
         }
     }
 
+    /**
+     * Hiển thị danh sách kết quả lên bảng.
+     * Nếu không có kết quả -> Thông báo.
+     */
     private void displayResults(ArrayList<ParkingSpot> results) {
         if (results.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả nào!", "Thông báo",

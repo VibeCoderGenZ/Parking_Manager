@@ -1,11 +1,11 @@
 ## Vscode
-.vscode
-bin
-data
+.vscode/
+bin/
+data/
 
 ## IntelliJ
 .idea
 *.iml
-out
+out/
 
-doc
+doc/

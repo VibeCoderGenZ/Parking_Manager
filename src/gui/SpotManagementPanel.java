@@ -65,7 +65,7 @@ public class SpotManagementPanel extends JPanel {
 
         // 2. Bộ lọc Trạng thái
         topPanel.add(new JLabel("   Lọc theo trạng thái:"));
-        String[] statuses = { "Tất cả", "Trống", "Đang có xe" };
+        String[] statuses = { "Tất cả", "Trống", "Có xe" };
         cbFilterStatus = new JComboBox<>(statuses);
         cbFilterStatus.addActionListener(e -> loadData()); // Reload khi chọn
         topPanel.add(cbFilterStatus);

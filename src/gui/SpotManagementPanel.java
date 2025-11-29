@@ -153,12 +153,12 @@ public class SpotManagementPanel extends JPanel {
             if ("Trống".equals(selectedStatus) && spot.isOccupied()) {
                 continue; // Đang tìm chỗ trống mà chỗ này có xe -> Bỏ qua
             }
-            if ("Đang có xe".equals(selectedStatus) && !spot.isOccupied()) {
+            if ("Có xe".equals(selectedStatus) && !spot.isOccupied()) {
                 continue; // Đang tìm chỗ có xe mà chỗ này trống -> Bỏ qua
             }
 
             // 3. Thêm vào bảng
-            String status = spot.isOccupied() ? "Đang có xe" : "Trống";
+            String status = spot.isOccupied() ? "Có xe" : "Trống";
             String plate = spot.getLicensePlate() == null ? "---" : spot.getLicensePlate();
 
             Object[] row = {

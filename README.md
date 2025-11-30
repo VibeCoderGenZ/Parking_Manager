@@ -1,5 +1,22 @@
-## Project Quản Lý Bãi Gửi Xe nhóm 11
+# Project Quản Lý Bãi Gửi Xe nhóm 11
 
-### Sử dụng ngôn ngữ Java áp dụng phương pháp OOP, lưu trữ thông qua file văn bản, giao diện Java Swing
+Ứng dụng quản lý khách sạn được phát triển nhằm hỗ trợ thực hiện các tác vụ cơ bản để quản lý bãi gửi xe.
+Hỗ trợ lưu trữ dữ liệu thông qua đọc ghi file `csv` văn bản.
 
-### [Link Báo cáo](https://docs.google.com/document/d/1m4v-R8dojgZY1A2r_tjpGel5WZNoQn8GZccrVRe5f-E/edit?tab=t.0)
+## Công nghệ sử dụng
+
+- **Java** 25 với giao diện Java Swing
+
+## Cấu trúc dự án
+
+```
+Parking_Manager/
+├── src/
+│   ├── gui/          # Giao diện người dùng (Java Swing)
+│   └── logic/        # Logic backend của dự án
+└── README.md
+```
+
+## Chi tiết dự án
+
+[Link Báo cáo](https://docs.google.com/document/d/1m4v-R8dojgZY1A2r_tjpGel5WZNoQn8GZccrVRe5f-E/edit?tab=t.0)

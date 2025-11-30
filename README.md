@@ -1,11 +1,11 @@
-# Project Quản Lý Bãi Gửi Xe nhóm 11
+# Project Parking Manager nhóm 11
 
-- Ứng dụng quản lý Bãi Gửi Xe được phát triển nhằm hỗ trợ thực hiện các tác vụ cơ bản, tự động hóa để quản lý bãi gửi xe.
-- Hỗ trợ lưu trữ dữ liệu thông qua đọc ghi file `csv` văn bản.
+- Ứng dụng _Parking Manager_ được phát triển nhằm hỗ trợ thực hiện các tác vụ cơ bản để _Quản Lý Bãi Gửi Xe_.
+- Hỗ trợ lưu trữ dữ liệu thông qua đọc ghi file văn bản `csv`.
 
 ## Công nghệ sử dụng
 
-- **Java** 25 với giao diện Java Swing
+- **Java 25** với giao diện **Java Swing**
 
 ## Cấu trúc dự án
 
@@ -16,6 +16,10 @@ Parking_Manager/
 │   └── logic/        # Logic backend của dự án
 └── README.md
 ```
+
+## Yêu cầu thư viện
+
+- Dự án yêu cầu sử dụng Java 8+, ngoài ra không yêu cầu gì thêm.
 
 ## Chi tiết dự án
 

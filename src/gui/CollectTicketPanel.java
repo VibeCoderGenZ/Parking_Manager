@@ -187,7 +187,7 @@ public class CollectTicketPanel extends JPanel {
             }
             return ticket;
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Mã vé phải là số nguyên!", "Lỗi định dạng", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Mã vé không chính xác", "Lỗi định dạng", JOptionPane.ERROR_MESSAGE);
             return null;
         }
     }

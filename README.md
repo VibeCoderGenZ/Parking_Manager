@@ -1,7 +1,7 @@
 # Project Quản Lý Bãi Gửi Xe nhóm 11
 
-Ứng dụng quản lý khách sạn được phát triển nhằm hỗ trợ thực hiện các tác vụ cơ bản để quản lý bãi gửi xe.
-Hỗ trợ lưu trữ dữ liệu thông qua đọc ghi file `csv` văn bản.
+- Ứng dụng quản lý khách sạn được phát triển nhằm hỗ trợ thực hiện các tác vụ cơ bản để quản lý bãi gửi xe.
+- Hỗ trợ lưu trữ dữ liệu thông qua đọc ghi file `csv` văn bản.
 
 ## Công nghệ sử dụng
 

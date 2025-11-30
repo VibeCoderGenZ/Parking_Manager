@@ -11,6 +11,8 @@
 
 ```
 Parking_Manager/
+├── data/             # Data demo dự án
+├── doc/              # Class Diagram
 ├── src/
 │   ├── gui/          # Giao diện người dùng (Java Swing)
 │   └── logic/        # Logic backend của dự án

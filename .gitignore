@@ -1,7 +1,6 @@
 ## Vscode
 .vscode/
 bin/
-data/
 
 ## IntelliJ
 .idea

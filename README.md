@@ -1,7 +1,7 @@
 # Project Parking Manager nhóm 11
 
 - Ứng dụng _Parking Manager_ được phát triển nhằm hỗ trợ thực hiện các tác vụ cơ bản để _Quản Lý Bãi Gửi Xe_.
-- Hỗ trợ lưu trữ dữ liệu thông qua đọc ghi file văn bản `csv`.
+- Hỗ trợ lưu trữ dữ liệu thông qua đọc/ghi file văn bản `csv`.
 
 ## Công nghệ sử dụng
 

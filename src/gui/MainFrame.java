@@ -120,7 +120,7 @@ public class MainFrame extends JFrame {
 
     /**
      * Helper method để tạo nút điều hướng và gắn sự kiện chuyển tab.
-     * 
+     *
      * @param text     Tên hiển thị trên nút.
      * @param cardName Tên định danh của màn hình (Card Name) trong CardLayout.
      */
@@ -200,7 +200,7 @@ public class MainFrame extends JFrame {
      * Làm mới dữ liệu của panel khi chuyển tab.
      * (Do CardLayout không tự refresh, ta cần gọi thủ công để cập nhật dữ liệu mới
      * nhất).
-     * 
+     *
      * @param cardName Tên màn hình sắp được hiển thị.
      */
     private void refreshPanelData(String cardName) {
@@ -228,7 +228,7 @@ public class MainFrame extends JFrame {
      */
     private void performExit() {
         int confirm = JOptionPane.showConfirmDialog(this,
-                "Bạn có chắc chắn muốn thoát?\nDữ liệu sẽ được tự động lưu.",
+                "Bạn muốn đóng ứng dụng?",
                 "Xác nhận thoát",
                 JOptionPane.YES_NO_OPTION);
 

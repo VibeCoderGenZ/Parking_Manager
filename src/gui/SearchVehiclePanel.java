@@ -95,17 +95,13 @@ public class SearchVehiclePanel extends JPanel {
      */
     private void handleSearchAction(ActionEvent e) {
         String keyword = searchField.getText().trim();
-        if (keyword.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập từ khóa tìm kiếm!", "Thông báo",
-                    JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
         tableModel.setRowCount(0); // Xóa kết quả cũ
         String searchType = (String) searchTypeCombo.getSelectedItem();
         ArrayList<Vehicle> results = new ArrayList<>();
 
-        if ("Biển Số Xe".equals(searchType)) {
+        if (keyword.isEmpty()) {
+            results.addAll(parkingLot.getVehicles());
+        } else if ("Biển Số Xe".equals(searchType)) {
             searchByLicensePlate(keyword, results);
         } else if ("Tên Chủ Xe".equals(searchType)) {
             searchByOwnerName(keyword, results);
@@ -150,5 +146,10 @@ public class SearchVehiclePanel extends JPanel {
                 tableModel.addRow(rowData);
             }
         }
+    }
+
+    /** Cho phép các panel ngoài tái sử dụng tìm kiếm mặc định. */
+    public void refreshResults() {
+        handleSearchAction(null);
     }
 }

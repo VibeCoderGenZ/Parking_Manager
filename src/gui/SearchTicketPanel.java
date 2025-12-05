@@ -98,13 +98,14 @@ public class SearchTicketPanel extends JPanel {
      */
     private void handleSearchAction(ActionEvent e) {
         String keyword = searchField.getText().trim();
+        tableModel.setRowCount(0); // Xóa kết quả cũ
+
         if (keyword.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập từ khóa tìm kiếm!", "Thông báo",
-                    JOptionPane.WARNING_MESSAGE);
+            // Khi không nhập gì, hiển thị toàn bộ vé hiện có
+            displayResults(new ArrayList<>(parkingLot.getTickets()));
             return;
         }
 
-        tableModel.setRowCount(0); // Xóa kết quả cũ
         String searchType = (String) searchTypeCombo.getSelectedItem();
         ArrayList<Ticket> results = new ArrayList<>();
 
@@ -115,6 +116,13 @@ public class SearchTicketPanel extends JPanel {
         }
 
         displayResults(results);
+    }
+
+    /**
+     * Cho phép các thành phần bên ngoài kích hoạt lại tìm kiếm để làm mới hiển thị.
+     */
+    public void refreshResults() {
+        handleSearchAction(null);
     }
 
     /**

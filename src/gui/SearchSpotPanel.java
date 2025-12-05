@@ -97,17 +97,13 @@ public class SearchSpotPanel extends JPanel {
      */
     private void handleSearchAction(ActionEvent e) {
         String keyword = searchField.getText().trim();
-        if (keyword.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập từ khóa tìm kiếm!", "Thông báo",
-                    JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
         tableModel.setRowCount(0); // Xóa kết quả cũ
         String searchType = (String) searchTypeCombo.getSelectedItem();
         ArrayList<ParkingSpot> results = new ArrayList<>();
 
-        if ("Mã Chỗ".equals(searchType)) {
+        if (keyword.isEmpty()) {
+            results.addAll(parkingLot.getSpots());
+        } else if ("Mã Chỗ".equals(searchType)) {
             searchBySpotId(keyword, results);
         } else if ("Biển Số Xe".equals(searchType)) {
             searchByLicensePlate(keyword, results);
@@ -170,5 +166,10 @@ public class SearchSpotPanel extends JPanel {
                 tableModel.addRow(rowData);
             }
         }
+    }
+
+    /** Cho phép bên ngoài kích hoạt lại tìm kiếm. */
+    public void refreshResults() {
+        handleSearchAction(null);
     }
 }

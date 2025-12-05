@@ -109,13 +109,13 @@ public class MainFrame extends JFrame {
         navPanel.setBackground(new Color(240, 240, 240)); // Màu nền xám nhẹ
 
         // Tạo các nút chức năng tương ứng với yêu cầu
-        createNavButton("1. Tạo Vé / Thu Vé", "FUNCTION_1");
-        createNavButton("2. Quản Lý Vé", "FUNCTION_2");
+        createNavButton("Tạo Vé / Thu Vé", "FUNCTION_1");
+        createNavButton("Danh sách Vé", "FUNCTION_2");
         navPanel.add(new JLabel()); // Khoảng trống (Vị trí 3 - Placeholder)
-        createNavButton("4. Quản Lý Xe", "FUNCTION_4");
-        createNavButton("5. Quản Lý Bãi Xe", "FUNCTION_5");
+        createNavButton("Danh sách Xe", "FUNCTION_4");
+        createNavButton("Danh sách Bãi Đỗ", "FUNCTION_5");
         navPanel.add(new JLabel()); // Khoảng trống (Vị trí 6 - Placeholder)
-        createNavButton("7. Tìm Kiếm", "FUNCTION_7");
+        createNavButton("Tìm Kiếm nâng cao", "FUNCTION_7");
     }
 
     /**
@@ -216,6 +216,10 @@ public class MainFrame extends JFrame {
             case "FUNCTION_5":
                 if (spotPanel != null)
                     spotPanel.loadData();
+                break;
+            case "FUNCTION_7":
+                if (searchPanel != null)
+                    searchPanel.refreshCurrentTab();
                 break;
             // Các chức năng khác nếu cần refresh thì thêm vào đây
         }

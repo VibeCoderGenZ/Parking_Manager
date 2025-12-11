@@ -10,12 +10,12 @@
 - [Cấu trúc dự án](#cấu-trúc-dự-án)
 - [Bắt đầu nhanh](#bắt-đầu-nhanh)
 - [Cách sử dụng](#cách-sử-dụng)
-- [Định dạng dữ liệu CSV](#định-dạng-dữ-liệu-csv)
+- [Định dạng mẫu dữ liệu CSV](#định-dạng-mẫu-dữ-liệu-csv)
 - [Tài liệu](#tài-liệu)
 
 ## Tổng quan
 
-Parking Manager được xây dựng cho nhu cầu quản lý bãi gửi xe quy mô nhỏ đến trung bình. Ứng dụng tách biệt rõ phần giao diện (Swing) và phần nghiệp vụ (logic), đảm bảo dễ bảo trì và mở rộng.
+Parking Manager được xây dựng cho nhu cầu **Quản lý bãi gửi xe** quy mô nhỏ đến trung bình. Ứng dụng tách biệt rõ phần giao diện (Swing) và phần nghiệp vụ (logic), xây dựng dựa trên phương pháp *Hướng đối tượng*, đảm bảo dễ bảo trì và mở rộng.
 
 ## Tính năng chính
 

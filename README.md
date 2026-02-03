@@ -109,7 +109,3 @@ java -cp bin App
 #ticketID,#spotID,#licensePlate,#entryTime,#exitTime
 1,1,30A12345,2025-12-09T10:30:00,
 ```
-
-## Tài liệu
-
-- Báo cáo chi tiết: [Google Docs](https://docs.google.com/document/d/1m4v-R8dojgZY1A2r_tjpGel5WZNoQn8GZccrVRe5f-E/edit)
